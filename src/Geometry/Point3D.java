@@ -18,6 +18,12 @@ public class Point3D  extends Point2D{
         return z;
     }
 
+    public void movePoint(double dx, double dy, double dz)
+    {
+        super.movePoint(dx, dy);
+        this.z += dz;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

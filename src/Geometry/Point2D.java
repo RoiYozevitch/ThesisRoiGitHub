@@ -32,6 +32,12 @@ public class Point2D {
         return true;
     }
 
+    public void movePoint(double dx, double dy)
+    {
+        this.x += dx;
+        this.y += dy;
+    }
+
     @Override
     public int hashCode() {
         int result;
