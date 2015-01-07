@@ -11,6 +11,20 @@ public class Point2D {
         this.y = y;
     }
 
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    public double distance(Point2D p)
+    {
+        double ans = Math.sqrt(Math.pow(this.x-p.getX(),2)+Math.pow(this.y-p.getY(),2));
+        return ans;
+    }
+
     @Override
     public String toString() {
         return "Point2D{" +
@@ -57,3 +71,4 @@ public class Point2D {
         return y;
     }
 }
+

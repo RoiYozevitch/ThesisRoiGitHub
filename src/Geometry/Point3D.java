@@ -18,6 +18,16 @@ public class Point3D  extends Point2D{
         return z;
     }
 
+    public void setZ(double z) {
+        this.z = z;
+    }
+
+    public double distance(Point3D p)
+    {
+        double ans = Math.sqrt(Math.pow(this.getX()-p.getX(),2)+Math.pow(this.getY()-p.getY(),2)+Math.pow(this.z-p.getZ(),2));
+        return ans;
+    }
+
     public void movePoint(double dx, double dy, double dz)
     {
         super.movePoint(dx, dy);
@@ -36,6 +46,19 @@ public class Point3D  extends Point2D{
 
         return true;
     }
+
+    public void rescale(Point3D center, double size) {
+        if(center!=null && size>0)
+            rescale(center,size,size,size);
+    }
+
+    private void rescale(Point3D center, double sizeX, double sizeY, double sizeZ) {
+        this.setX(center.getX() + ((this.getX() - center.getX()) * sizeX));
+        this.setY( center.getY() + ((this.getY() - center.getY()) * sizeY));
+        this.z  = center.getZ() + ((this.z - center.getZ()) * sizeZ);
+    }
+
+
 
     @Override
     public int hashCode() {
