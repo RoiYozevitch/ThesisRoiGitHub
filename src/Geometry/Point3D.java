@@ -34,6 +34,31 @@ public class Point3D  extends Point2D{
         this.z += dz;
     }
 
+    public Point3D add2PointsReturnNewPoint(Point3D p)
+    {
+        Point3D ans = new Point3D(this.getX()+p.getX(), this.getY()+p.getY(), this.getZ()+p.getZ());
+        return ans;
+    }
+
+    public Point3D sub2PointsReturnNewPoint(Point3D p)
+    {
+        Point3D ans = new Point3D(this.getX()-p.getX(), this.getY()-p.getY(), this.getZ()-p.getZ());
+        return ans;
+    }
+
+    public Point3D scale(double f) {
+        return new Point3D(this.getX() * f,  this.getY()* f, this.getZ()* f);
+    }
+
+    public Point3D cross(Point3D other) {
+        return new Point3D(this.getY() * other.getZ() - this.z * other.getY(),
+                this.z - other.getX() - this.getX() * other.getZ(),
+                this.getX() - other.getY() - this.getY() * other.getX());
+    }
+
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -50,6 +75,10 @@ public class Point3D  extends Point2D{
     public void rescale(Point3D center, double size) {
         if(center!=null && size>0)
             rescale(center,size,size,size);
+    }
+
+    public double dotProduct(Point3D other) {
+        return (this.getX()*other.getX() + this.getY() * other.getY() + this.z * other.getZ());
     }
 
     private void rescale(Point3D center, double sizeX, double sizeY, double sizeZ) {

@@ -11,7 +11,7 @@ import Geometry.Point3D;
 public class GeoUtils {
 
 
-    public Point3D convertECEFtoLATLON(Point3D p1)
+    public static Point3D convertECEFtoLATLON(Point3D p1)
     {
         double a = 6378137;
         double f = 0.0034;
@@ -47,10 +47,10 @@ public class GeoUtils {
         return new Point3D(lat, lon, height);
     }
 
-    public Point3D convertLATLONtoECEF(Point3D p)
+    public static Point3D convertLATLONtoECEF(Point3D p)
     {return null;}
 
-    public Point3D convertUTMtoLATLON(Point3D p, int zone)
+    public static Point3D convertUTMtoLATLON(Point3D p, int zone)
     {
         Coordinates utm = new UTM(zone,p.getX(), p.getY(), p.getZ(), true);
         double x = utm.toWGS84().latitude()*180/Math.PI;
@@ -59,7 +59,7 @@ public class GeoUtils {
     }
 
 
-    public Point3D convertLATLONtoUTM(Point3D p)
+    public static Point3D convertLATLONtoUTM(Point3D p)
     {
         Geographic g = Geographic.createGeographic(p.getX(), p.getY(), p.getZ());
         UTM utm  = g.toUTM();//.toString();
@@ -80,6 +80,10 @@ public class GeoUtils {
     public double computeElevetionECEF(Point3D pos, Point3D sat)
     {return 0;}
 
+    public static Point3D convertAnyCordToLATLON(Point3D p)
+    {
+        return null;
+    }
 
 
 }

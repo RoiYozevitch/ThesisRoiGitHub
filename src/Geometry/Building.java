@@ -25,6 +25,10 @@ public class Building {
 
     }
 
+    public List<Wall> getWalls() {
+        return walls;
+    }
+
     public String getBuildingName() {
         return buildingName;
     }

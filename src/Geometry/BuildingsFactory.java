@@ -20,7 +20,7 @@ public class BuildingsFactory {
     }
 
   //this function return true is the list was created and false if an error occurs.
-   public boolean generateBuildingListfromKMLfile(String file, int numberOfLinesPlacemarkToCord)
+   public boolean generateUTMBuildingListfromKMLfile(String file, int numberOfLinesPlacemarkToCord)
    {
 
 
@@ -32,8 +32,11 @@ public class BuildingsFactory {
            {
                if(line.startsWith("<Placemark"))
                {
-
+                for(int tmp=0; tmp<numberOfLinesPlacemarkToCord; tmp++)
+                    line = reader.readLine();
                }
+               Building tmpBuilding = generateUTMBuildingFromCordString(line);
+               buildingList.add(tmpBuilding);
            }
 
 
@@ -47,8 +50,10 @@ public class BuildingsFactory {
        return true;
 
    }
-    public Building generateBuildingFromCordString(String CordFromKML)
+
+    public Building generateUTMBuildingFromCordString(String cordFromKMLString)
     {
+        String[] cords = cordFromKMLString.split(",");
         Building ans = null;
         return ans;
     }
