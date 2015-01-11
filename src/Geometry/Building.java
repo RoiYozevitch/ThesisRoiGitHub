@@ -1,5 +1,6 @@
 package Geometry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -11,8 +12,24 @@ public class Building {
     String buildingName;
     List<Wall> walls;
     Integer numberOfWalls;
-    Integer maxHeigth;
+    double maxHeigth;
 
+    public Building()
+    {
+        this.walls = new ArrayList<Wall>();
+        this.numberOfWalls=0;
+        this.maxHeigth = 0;
+        this.buildingName = "";
+    }
+
+    public void generateBuildingFromPoint3dList(List<Point3D> buildingVertecies)
+    {
+
+        for(int i=1; i<buildingVertecies.size(); i++) {
+            Wall tmp = new Wall(buildingVertecies.get(i), buildingVertecies.get(i - 1));
+            walls.add(tmp);
+        }
+    }
 
     public Building(String buildingName, List<Wall> walls) {
         this.buildingName = buildingName;
@@ -29,6 +46,8 @@ public class Building {
         return walls;
     }
 
+
+
     public String getBuildingName() {
         return buildingName;
     }
@@ -41,11 +60,25 @@ public class Building {
         this.numberOfWalls = numberOfWalls;
     }
 
-    public Integer getMaxHeigth() {
+    public double getMaxHeigth() {
         return maxHeigth;
     }
 
     public void setMaxHeigth(Integer maxHeigth) {
         this.maxHeigth = maxHeigth;
+    }
+
+    public void setMaxHeight()
+    {
+        double tmpMaxHeight =0;
+        double max;
+        for(Wall wall : walls)
+        {
+            max= wall.getMaxHeight();
+            if(max> tmpMaxHeight)
+                tmpMaxHeight = max;
+
+        }
+        this.maxHeigth = tmpMaxHeight;
     }
 }

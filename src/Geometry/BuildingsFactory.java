@@ -1,5 +1,7 @@
 package Geometry;
 
+import Utils.GeoUtils;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -30,13 +32,14 @@ public class BuildingsFactory {
            line = reader.readLine();
            while(line!=null)
            {
-               if(line.startsWith("<Placemark"))
-               {
-                for(int tmp=0; tmp<numberOfLinesPlacemarkToCord; tmp++)
-                    line = reader.readLine();
+               if(line.startsWith("<Placemark")) {
+                   for (int tmp = 0; tmp <= numberOfLinesPlacemarkToCord; tmp++)
+                       line = reader.readLine();
+
+                   Building tmpBuilding = generateUTMBuildingFromCordString(line);
+                   buildingList.add(tmpBuilding);
                }
-               Building tmpBuilding = generateUTMBuildingFromCordString(line);
-               buildingList.add(tmpBuilding);
+               line = reader.readLine();
            }
 
 
@@ -53,8 +56,30 @@ public class BuildingsFactory {
 
     public Building generateUTMBuildingFromCordString(String cordFromKMLString)
     {
-        String[] cords = cordFromKMLString.split(",");
-        Building ans = null;
+        String[] cords = cordFromKMLString.split(",| ");
+        List<Point3D> buildingVertices = new ArrayList<Point3D>();
+        int size = cords.length;
+        int tmp=0;
+        Double x, y, z;
+        while(tmp<size-2)
+        {
+            y = Double.parseDouble(cords[tmp]);
+            x = Double.parseDouble(cords[tmp+1]);
+            z= Double.parseDouble(cords[tmp+2]);
+            Point3D tmpPoint = new Point3D(x, y, z);
+            tmpPoint = GeoUtils.convertLATLONtoUTM(tmpPoint);
+            buildingVertices.add(tmpPoint);
+            tmp+=3;
+
+        }
+        int Size = buildingVertices.size();
+        if(buildingVertices.get(Size-1)== buildingVertices.get(0))
+            buildingVertices.remove(Size-1); //remove the last point since it similar to the first point
+        Building ans = new Building();
+        ans.generateBuildingFromPoint3dList(buildingVertices);
+        ans.setNumberOfWalls(ans.getWalls().size());
+        ans.setMaxHeight();
+
         return ans;
     }
 

@@ -13,9 +13,11 @@ public class GeomUtils {
     /*
     This function returns a boolean for line plane intersection.
     The wall's coordinates MUST be coplanar.
+    Code for this function comes from http://stackoverflow.com/questions/21114796/3d-ray-plane-intersection-test-in-java
+
 
      */
-    public static boolean intersectRayWithWall(Line3D ray,
+    public static boolean intersectRayWithPlane(Line3D ray,
                                                  Wall wall) {
         Point3D[] PointArray = wall.getPoint3dArray();
         Point3D dS21 = PointArray[1].sub2PointsReturnNewPoint(PointArray[0]);

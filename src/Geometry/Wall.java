@@ -15,23 +15,38 @@ import java.util.List;
  */
 
 public class Wall {
-    Point3D[]  point3dArray;
     Integer wallType;
+    double maxHeight;
+    Line3D wallAsLine; //this Line3D represent a wall relative to ground.
+    Point3D[] point3dArray;
 
-    public Point3D[] getPoint3dArray() {
-        return point3dArray;
+    public Line3D getWallAsLine() {
+        return wallAsLine;
     }
 
-    public void setPoint3dArray(Point3D[] point3dArray) {
-        this.point3dArray = point3dArray;
+    public void setWallAsLine(Line3D wallAsLine) {
+        this.wallAsLine = wallAsLine;
+    }
+
+    public Wall(Point3D a, Point3D b)
+    {
+        wallAsLine = new Line3D(a, b);
+        this.wallType = 0;
+        this.maxHeight = Math.max(a.getZ(), b.getZ());
+
+    }
+
+    public double getMaxHeight() {
+        return maxHeight;
     }
 
     public Integer getWallType() {
         return wallType;
     }
 
-    public void setWallType(Integer wallType) {
-        this.wallType = wallType;
+
+    public Point3D[] getPoint3dArray() {
+        return point3dArray;
     }
 }
 
