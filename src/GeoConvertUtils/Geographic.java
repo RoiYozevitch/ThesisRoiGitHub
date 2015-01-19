@@ -272,7 +272,6 @@ public class Geographic {
 	
 	  /**
 	   *
-	   * @param from WGS84 coordinate to translate
 	   * @return UTM coordinate object
 	   */
 	  public UTM toUTM() {

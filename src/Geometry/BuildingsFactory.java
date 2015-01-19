@@ -14,17 +14,10 @@ import java.util.List;
  */
 public class BuildingsFactory {
 
-    List<Building> buildingList;
-    Integer numberOfBuildings;
-
-    public BuildingsFactory() {
-        this.buildingList = new ArrayList<Building>();
-    }
 
   //this function return true is the list was created and false if an error occurs.
-   public boolean generateUTMBuildingListfromKMLfile(String file, int numberOfLinesPlacemarkToCord)
-   {
-
+   public static List<Building> generateUTMBuildingListfromKMLfile(String file, int numberOfLinesPlacemarkToCord) throws Exception {
+       List<Building> buildingList = new ArrayList<Building>();
 
        try {
            BufferedReader reader = new BufferedReader(new FileReader(file));
@@ -32,7 +25,7 @@ public class BuildingsFactory {
            line = reader.readLine();
            while(line!=null)
            {
-               if(line.startsWith("<Placemark")) {
+               if(line.startsWith("<Placemark")) {//todo change to cordinates
                    for (int tmp = 0; tmp <= numberOfLinesPlacemarkToCord; tmp++)
                        line = reader.readLine();
 
@@ -41,55 +34,45 @@ public class BuildingsFactory {
                }
                line = reader.readLine();
            }
-
-
-       } catch (FileNotFoundException e) {
+      } catch (FileNotFoundException e) {
            e.printStackTrace();
        } catch (IOException e) {
            e.printStackTrace();
        }
 
 
-       return true;
+       return buildingList;
 
    }
 
-    public Building generateUTMBuildingFromCordString(String cordFromKMLString)
-    {
+    private static Building generateUTMBuildingFromCordString(String cordFromKMLString) throws Exception {
         String[] cords = cordFromKMLString.split(",| ");
         List<Point3D> buildingVertices = new ArrayList<Point3D>();
         int size = cords.length;
-        int tmp=0;
+        int idx=0;
         Double x, y, z;
-        while(tmp<size-2)
+        while(idx<size-2)
         {
-            y = Double.parseDouble(cords[tmp]);
-            x = Double.parseDouble(cords[tmp+1]);
-            z= Double.parseDouble(cords[tmp+2]);
+            y = Double.parseDouble(cords[idx]);
+            x = Double.parseDouble(cords[idx+1]);
+            z= Double.parseDouble(cords[idx+2]);
             Point3D tmpPoint = new Point3D(x, y, z);
             tmpPoint = GeoUtils.convertLATLONtoUTM(tmpPoint);
             buildingVertices.add(tmpPoint);
-            tmp+=3;
+            idx+=3;
 
         }
         int Size = buildingVertices.size();
-        if(buildingVertices.get(Size-1)== buildingVertices.get(0))
+        if(buildingVertices.get(Size-1).equals(buildingVertices.get(0))){
             buildingVertices.remove(Size-1); //remove the last point since it similar to the first point
-        Building ans = new Building();
-        ans.generateBuildingFromPoint3dList(buildingVertices);
-        ans.setNumberOfWalls(ans.getWalls().size());
-        ans.setMaxHeight();
-
-        return ans;
+        }
+        else{
+            throw new Exception("Bad KML File");
+        }
+        return new Building(buildingVertices);
     }
 
-    public List<Building> getBuildingList() {
-        return buildingList;
-    }
 
-    public Integer getNumberOfBuildings() {
-        return numberOfBuildings;
-    }
 
 
 }

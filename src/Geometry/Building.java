@@ -1,6 +1,8 @@
 package Geometry;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -11,74 +13,52 @@ public class Building {
 
     String buildingName;
     List<Wall> walls;
-    Integer numberOfWalls;
     double maxHeigth;
 
-    public Building()
+    Building(List<Point3D> buildingVertecies)
     {
         this.walls = new ArrayList<Wall>();
-        this.numberOfWalls=0;
         this.maxHeigth = 0;
         this.buildingName = "";
+        init(buildingVertecies);
     }
 
-    public void generateBuildingFromPoint3dList(List<Point3D> buildingVertecies)
+    private void generateBuildingFromPoint3dList(List<Point3D> buildingVertecies)
     {
-
         for(int i=1; i<buildingVertecies.size(); i++) {
             Wall tmp = new Wall(buildingVertecies.get(i), buildingVertecies.get(i - 1));
             walls.add(tmp);
         }
     }
 
-    public Building(String buildingName, List<Wall> walls) {
-        this.buildingName = buildingName;
-        this.walls = walls;
-    }
-
-    public Building(List<Wall> walls) {
-        this.walls = walls;
-        this.buildingName=null;
-
+    private void init(List<Point3D> buildingVertecies){
+        generateBuildingFromPoint3dList(buildingVertecies);
+        setMaxHeight();
     }
 
     public List<Wall> getWalls() {
         return walls;
     }
 
-
-
     public String getBuildingName() {
         return buildingName;
     }
 
     public Integer getNumberOfWalls() {
-        return numberOfWalls;
+        return walls.size();
     }
 
-    public void setNumberOfWalls(Integer numberOfWalls) {
-        this.numberOfWalls = numberOfWalls;
-    }
-
-    public double getMaxHeigth() {
+    public double getMaxHeight() {
         return maxHeigth;
     }
 
-    public void setMaxHeigth(Integer maxHeigth) {
-        this.maxHeigth = maxHeigth;
-    }
-
-    public void setMaxHeight()
+    private void setMaxHeight()
     {
-        double tmpMaxHeight =0;
-        double max;
-        for(Wall wall : walls)
-        {
-            max= wall.getMaxHeight();
-            if(max> tmpMaxHeight)
-                tmpMaxHeight = max;
-
-        }
-        this.maxHeigth = tmpMaxHeight;
+        maxHeigth = Collections.max(walls, new Comparator<Wall>() {
+            @Override
+            public int compare(Wall o1, Wall o2) {
+                return Double.compare(o1.getMaxHeight(), o2.getMaxHeight());
+            }
+        }).getMaxHeight();
     }
 }

@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 public class Wall {
-    Integer wallType;
+    Integer wallType;//todo roi: change to enum
     double maxHeight;
     Line3D wallAsLine; //this Line3D represent a wall relative to ground.
     Point3D[] point3dArray;

@@ -12,11 +12,13 @@ public class TestClass {
 
         String buildingFilePath = "bursa_mapping_v0.3.kml";
         System.out.println("The program begins");
-        List<Building> buildings;
         BuildingsFactory fact = new BuildingsFactory();
-        fact.generateUTMBuildingListfromKMLfile(buildingFilePath, 9);
-        buildings = fact.getBuildingList();
-        System.out.println(buildings.size());
+        try {
+            List<Building> buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath, 9);
+            System.out.println(buildings1.size());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
 
 

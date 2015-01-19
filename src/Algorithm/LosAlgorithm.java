@@ -39,7 +39,7 @@ public class LosAlgorithm {
         return true;
     }
 
-    public static boolean ComputeLos(Point3D pos,List<Building> buildings, List<Sat> sattelites)
+    public static boolean ComputeLos(Point3D pos, List<Building> buildings, List<Sat> sattelites)
     {
 
         for(Sat sat : sattelites)
