@@ -16,7 +16,7 @@ public class BuildingsFactory {
 
 
   //this function return true is the list was created and false if an error occurs.
-   public static List<Building> generateUTMBuildingListfromKMLfile(String file, int numberOfLinesPlacemarkToCord) throws Exception {
+   public static List<Building> generateUTMBuildingListfromKMLfile(String file) throws Exception {
        List<Building> buildingList = new ArrayList<Building>();
 
        try {
@@ -25,10 +25,8 @@ public class BuildingsFactory {
            line = reader.readLine();
            while(line!=null)
            {
-               if(line.startsWith("<Placemark")) {//todo change to cordinates
-                   for (int tmp = 0; tmp <= numberOfLinesPlacemarkToCord; tmp++)
-                       line = reader.readLine();
-
+               if(line.startsWith("<coordinates")) {
+                   line = reader.readLine();
                    Building tmpBuilding = generateUTMBuildingFromCordString(line);
                    buildingList.add(tmpBuilding);
                }

@@ -15,7 +15,9 @@ import java.util.List;
  */
 
 public class Wall {
-    Integer wallType;//todo roi: change to enum
+    public enum wallType{square, polygon};//todo Ayal: chaeck Roi
+    public wallType typeOfwall;
+
     double maxHeight;
     Line3D wallAsLine; //this Line3D represent a wall relative to ground.
     Point3D[] point3dArray;
@@ -31,7 +33,7 @@ public class Wall {
     public Wall(Point3D a, Point3D b)
     {
         wallAsLine = new Line3D(a, b);
-        this.wallType = 0;
+        typeOfwall=wallType.square;
         this.maxHeight = Math.max(a.getZ(), b.getZ());
 
     }
@@ -40,8 +42,8 @@ public class Wall {
         return maxHeight;
     }
 
-    public Integer getWallType() {
-        return wallType;
+    public wallType  getWallType() {
+        return typeOfwall;
     }
 
 

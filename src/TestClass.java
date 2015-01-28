@@ -14,7 +14,7 @@ public class TestClass {
         System.out.println("The program begins");
         BuildingsFactory fact = new BuildingsFactory();
         try {
-            List<Building> buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath, 9);
+            List<Building> buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath);
             System.out.println(buildings1.size());
         } catch (Exception e) {
             e.printStackTrace();

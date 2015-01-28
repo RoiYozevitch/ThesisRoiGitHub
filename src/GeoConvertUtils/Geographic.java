@@ -64,7 +64,6 @@ public class Geographic {
 		  try {
 			throw new Exception();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			System.err.println("enter coords in radians!");
 			e.printStackTrace();
 		}
