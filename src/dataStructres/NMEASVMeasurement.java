@@ -4,49 +4,24 @@ import Geometry.Point3D;
 
 public class NMEASVMeasurement {
 	
-	private int az, el, snr, prn;
-	 Point3D ECEFpos;
-	/*
-	The below equation fits GPS soley
-	Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM + deltaP_sv
-	 */
-	double rawPR;
-	double deltaP_ATM;
-	double deltaP_SV;
-	/*
-	for GLONASS sats, the equation becomes PR = rawPR - deltaP_ATM + deltaP_sv + deltaP_glo
-	 */
- 	double deltaP_glo;
-	double correctedPR;
+	protected int az, el, snr, prn;
 
-	public double getCorrectedPR() {
-		return correctedPR;
-	}
 
-	public NMEASVMeasurement( int snr, int prn, double xPos, double yPos, double zPos, double rawPR, double deltaP_ATM, double deltaP_SV, double deltaP_glo) {
 
+	public NMEASVMeasurement(int prn, int el, int az, int snr) {
+		this.az = az;
+		this.el = el;
 		this.snr = snr;
 		this.prn = prn;
-		this.ECEFpos = new Point3D(xPos, yPos, zPos);
-		this.rawPR = rawPR;
-		this.deltaP_ATM = deltaP_ATM;
-		this.deltaP_SV = deltaP_SV;
-		this.deltaP_glo = deltaP_glo;
-		setCorrectedPR();
-
 	}
 
-	public Point3D getECEFpos() {
-		return ECEFpos;
-	}
-
-	private void setCorrectedPR()
+	public NMEASVMeasurement(int prn, int snr)
 	{
-		if(this.prn<40)
-			this.correctedPR = this.rawPR -this.deltaP_ATM + this.deltaP_SV;
-		else if(this.prn>=40)
-			this.correctedPR = this.rawPR -this.deltaP_ATM + this.deltaP_SV + this.deltaP_glo;
+		this.prn = prn;
+		this.snr = snr;
 	}
+
+
 
 
 	/**
@@ -76,7 +51,9 @@ public class NMEASVMeasurement {
 	public int getPrn() {
 		return prn;
 	}
-	
-	
 
+
+	public enum GNSSType {
+		GPS, GLONASS
+	}
 }

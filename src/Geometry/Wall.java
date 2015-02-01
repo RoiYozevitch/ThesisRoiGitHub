@@ -1,7 +1,5 @@
 package Geometry;
 
-import java.util.List;
-
 /**
  * Created by Roi on 1/7/2015.
  * This class represents a surface (wall).
@@ -15,8 +13,8 @@ import java.util.List;
  */
 
 public class Wall {
-    public enum wallType{square, polygon};//todo Ayal: chaeck Roi
-    public wallType typeOfwall;
+    public enum WallType {SQUARE, POLYGON};//
+    public WallType typeOfwall;
 
     double maxHeight;
     Line3D wallAsLine; //this Line3D represent a wall relative to ground.
@@ -33,7 +31,7 @@ public class Wall {
     public Wall(Point3D a, Point3D b)
     {
         wallAsLine = new Line3D(a, b);
-        typeOfwall=wallType.square;
+        typeOfwall= WallType.SQUARE;
         this.maxHeight = Math.max(a.getZ(), b.getZ());
 
     }
@@ -42,7 +40,7 @@ public class Wall {
         return maxHeight;
     }
 
-    public wallType  getWallType() {
+    public WallType getWallType() {
         return typeOfwall;
     }
 

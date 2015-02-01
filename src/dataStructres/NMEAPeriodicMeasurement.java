@@ -12,11 +12,17 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	int numOfSVs;
 	List<NMEASVMeasurement> SVs;
 	long time;
-	
+
+	long UtcTime;
+
 	public double getAltElip(){
 		return altElip;
 	}
-	
+
+	public long getUtcTime() {
+		return UtcTime;
+	}
+
 	public double getHDOP(){
 		return HDOP;
 	}
@@ -25,7 +31,6 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		return SVs.size();
 	}
 	
-	@Override
 	public double getLon() {
 		// TODO Auto-generated method stub
 		return lon;
@@ -36,13 +41,11 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		return this.time;
 	}
 
-	@Override
 	public double getLat() {
 		// TODO Auto-generated method stub
 		return lat;
 	}
 
-	@Override
 	public double getAlt() {
 		// TODO Auto-generated method stub
 		return alt;
@@ -69,9 +72,10 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		return res;
 	}
 
-	public NMEAPeriodicMeasurement(long time, double lat, double lon, double alt,
+	public NMEAPeriodicMeasurement(long time, long UtcTime, double lat, double lon, double alt,
 								   double altElip, double hDOP, List<NMEASVMeasurement> sVs) {
 		this.time = time;
+		this.UtcTime  = UtcTime;
 		this.lat = lat;
 		this.lon = lon;
 		this.alt = alt;

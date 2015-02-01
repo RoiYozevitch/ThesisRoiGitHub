@@ -70,4 +70,11 @@ public class Sat {
     public void setSnr(int[] snr) {
         this.snr = snr;
     }
+
+    public double getXposECEF(){return this.satPosInECEF.getX();}
+
+    public double getYposECEF(){return this.satPosInECEF.getY();}
+
+    public double getZposECEF(){return this.satPosInECEF.getZ();}
+
 }

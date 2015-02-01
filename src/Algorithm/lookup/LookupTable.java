@@ -32,7 +32,7 @@ public class LookupTable {
             for(int j=0; j<yDim; j++)
             {
                 Point2D tmpPoint = grid.getPointfromGrid(i,j);
-                relation.setValue(tmpPoint, az, LosAlgorithm.findBuildings(tmpPoint, az, allBuildings));
+               // relation.setValue(tmpPoint, az, LosAlgorithm.findBuildings(tmpPoint, az, allBuildings));
             }
 
         //Point2D point = new Point2D(0, 0);

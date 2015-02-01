@@ -1,4 +1,4 @@
-package Parsing;
+package Parsing.sirf;
 
 
 import dataStructres.SirfPeriodicMeasurement;
