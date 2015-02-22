@@ -76,10 +76,30 @@ public class Line3D {
     /** this method checks if the Point3D p falls on the this (Line3D) */
     public boolean line3DContains(Point3D p) {return false;}
 
-    public Point3D intersectionPoint(Line3D l)
-    {
+
+
+    public Point2D intersectionPoint(Line3D l) {
+        return lineIntersect(l.getP1().getX(), l.getP1().getY(),l.getP2().getX(), l.getP2().getY(), this.p1.getX(),this.p1.getY(), this.p2.getX(), this.p2.getY());
+    }
+
+        public static  Point2D lineIntersect(double x1, double y1, double x2, double y2, double  x3, double y3, double x4, double y4) {
+        double denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+        if (denom == 0.0) { // Lines are parallel.
+            return null;
+        }
+        double ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3))/denom;
+        double ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3))/denom;
+        if (ua >= 0.0f && ua <= 1.0f && ub >= 0.0f && ub <= 1.0f) {
+            // Get the intersection point.
+            return new Point2D( x1 + ua*(x2 - x1), y1 + ua*(y2 - y1));
+        }
+
         return null;
     }
+
+
+
+
     public double distanceFromPoint(Point3D p)
     {return 0;}
 

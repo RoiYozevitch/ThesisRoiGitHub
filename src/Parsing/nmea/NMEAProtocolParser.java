@@ -2,6 +2,7 @@ package Parsing.nmea;
 
 import dataStructres.NMEAPeriodicMeasurement;
 import dataStructres.NMEASVMeasurement;
+import dataStructres.STMPeriodMeasurment;
 import dataStructres.STMSVMeasurement;
 
 import java.io.BufferedReader;
@@ -13,8 +14,10 @@ import java.util.List;
 
 public class NMEAProtocolParser {
 
+	public NMEAProtocolParser() {
+	}
 
-	public static List<NMEAPeriodicMeasurement> parse(String path) throws IOException{
+	public List<NMEAPeriodicMeasurement> parse(String path) throws IOException{
 		List<NMEAPeriodicMeasurement> result = new ArrayList<NMEAPeriodicMeasurement>();
 		BufferedReader br = new BufferedReader(new FileReader(path)); //todo throw spesific exeption. Check where an NMEA msg starts
 		String line;
@@ -43,7 +46,6 @@ public class NMEAProtocolParser {
 			if(currentSentence.getSentenceName().equals("$GPRMC"))
 			{
 				UtcTime = Long.parseLong(data[currentSentence.getfieldsIndexByName("UtcTime")]);
-
 			}
 			if (currentSentence.getSentenceName().equals("$GPGGA")){
 				time = Long.parseLong(data[currentSentence.getfieldsIndexByName("time")].replace(".", ""));
@@ -59,17 +61,25 @@ public class NMEAProtocolParser {
 				}
 			}
 			if (isSVDataSentence(currentSentence)){
-				if(currentSentence.getSentenceName().equals("$PSTMTS"))
-					addSTM_SVdata(svList, data);
-				else
 					addSVData(svList, data);
+			}
+			if (isExtra(currentSentence)){
+				doSomething(currentSentence);
 			}
 		}
 		result.add(new NMEAPeriodicMeasurement(time, UtcTime, lat, lon, alt, altElip, hDOP, svList));
 		return result;
 	}
 
-	private static void addSVData(List<NMEASVMeasurement> svList, String[] data) {
+	protected void doSomething(NMEASentence currentSentence) {
+		return;
+	}
+
+	protected boolean isExtra(NMEASentence currentSentence) {
+		return false;
+	}
+
+	protected void addSVData(List<NMEASVMeasurement> svList, String[] data) {
 		List<String[]> miniData = splitSatellites(data);
 		for (String[] svData : miniData){
             NMEASVMeasurement sv = new NMEASVMeasurement(Integer.parseInt(svData[0]),
@@ -80,39 +90,16 @@ public class NMEAProtocolParser {
         }
 	}
 
-	private static void addSTM_SVdata(List<NMEASVMeasurement> svList, String[] data)
-	{
-		int prn = Integer.parseInt(data[2]);
-		double rawPR = Double.parseDouble(data[3]);
-		double freq = Double.parseDouble(data[4]);
-		boolean lockSignal = Boolean.parseBoolean(data[5]);
-		int Cn0 = Integer.parseInt(data[6]);
-		double trackedTime = Double.parseDouble(data[7]);
-		boolean navigationData = Boolean.parseBoolean(data[8]);
-		double EcefPosX = Double.parseDouble(data[9]);
-		double EcefPosY = Double.parseDouble(data[10]);
-		double EcefPosZ = Double.parseDouble(data[11]);
-		double EcefVelX = Double.parseDouble(data[12]);
-		double EceFVelY = Double.parseDouble(data[13]);
-		double EceFVelz = Double.parseDouble(data[14]);
-		double deltaPsv = Double.parseDouble(data[15]);
-		double deltaPatm = Double.parseDouble(data[16]);
-		STMSVMeasurement currentStmSVmesserment = new STMSVMeasurement(prn, rawPR, freq, lockSignal, Cn0, trackedTime, navigationData, EcefPosX, EcefPosY, EcefPosZ, EcefVelX, EceFVelY, EceFVelz, deltaPsv, deltaPatm);
-		svList.add(currentStmSVmesserment);
-
-	}
 
 
 
 
-
-	private static boolean isSVDataSentence(NMEASentence sentence){
+	protected boolean isSVDataSentence(NMEASentence sentence){
 		return sentence.getSentenceName().equals("$GPGSV")
-				|| sentence.getSentenceName().equals("$GLGSV")
-				|| sentence.getSentenceName().equals("$PSTMTS");
+				|| sentence.getSentenceName().equals("$GLGSV");
 	}
 
-	private static String filter(String line) {
+	private String filter(String line) {
 		if (line.contains("$")){//start of message
 			line = line.substring(line.indexOf("$"));
 		}
@@ -125,7 +112,7 @@ public class NMEAProtocolParser {
 		return line;
 	}
 
-	private static List<String[]> splitSatellites(String[] data) {
+	private List<String[]> splitSatellites(String[] data) {
 		List<String[]> res = new ArrayList<String[]>();
 		for (int i = 4; i + 3 < data.length; i = i + 4){
 			if (data[i].equals("") || data[i + 1].equals("") || data[i + 2].equals("") || data[i + 3].equals("")){
@@ -136,8 +123,8 @@ public class NMEAProtocolParser {
 		return res;
 	}
 
-	private static boolean hasTimestamp(NMEASentence currentSentence) {
-		return currentSentence.getSentenceName().equals("$GPRMS");
+	private boolean hasTimestamp(NMEASentence currentSentence) {
+		return currentSentence.getSentenceName().equals("$GPRMC");
 	}
 
 }

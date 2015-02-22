@@ -3,10 +3,9 @@ package dataStructres;
 import Geometry.Point3D;
 
 public class NMEASVMeasurement {
-	
+
+	public static NMEASVMeasurement nullMeas = new NMEASVMeasurement(-1, -1, -1, -1);
 	protected int az, el, snr, prn;
-
-
 
 	public NMEASVMeasurement(int prn, int el, int az, int snr) {
 		this.az = az;

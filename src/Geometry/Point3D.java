@@ -28,6 +28,12 @@ public class Point3D  extends Point2D{
         return ans;
     }
 
+    public double distance2D (Point3D p)
+    {
+        double temp = Math.pow (p.getX() - this.getX(), 2) + Math.pow (p.getY() - this.getY(), 2);
+        return (double)Math.sqrt (temp);
+    }
+
     public void movePoint(double dx, double dy, double dz)
     {
         super.movePoint(dx, dy);

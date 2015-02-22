@@ -3,6 +3,7 @@ package nanoSatGPS;
 import GNSS.Sat;
 import Geometry.Point3D;
 import Jama.Matrix;
+import dataStructres.STMPeriodMeasurment;
 
 /**
  * Created by Roi on 1/28/2015.
@@ -17,33 +18,34 @@ public class posCompute {
         return alpha;
     }
 
-    private void setDrao(double[] drao,double[] rao,double[] pr,double bu) {
+    private void setDrao(double[] drao, double[] rao,double[] pr, double bu) {
         for (int i = 0; i < drao.length; i++) {
             drao[i] = (pr[i] - (rao[i] + bu));
         }
 
     }
 
-    private void setGu(Sat[] SV){
+    private void setGu(STMPeriodMeasurment measurment){
         Point3D intialGeuss = new Point3D(0,0,0);
-        double rao[] = new double[SV.length];
+        int numberOfSats = measurment.getSVs().size();
+        double rao[] = new double[numberOfSats];
 
-        for (int i = 0; i < rao.length; i++) {
-            rao[i] = Math.sqrt(Math.pow(intialGeuss.getX()-SV[i].getXposECEF(), 2)+Math.pow(intialGeuss.getY()-SV[i].getYposECEF(), 2)+Math.pow(intialGeuss.getZ()-SV[i].getZposECEF(), 2));
+        for (int i = 0; i < numberOfSats; i++) {
+            rao[i] = Math.sqrt(Math.pow(intialGeuss.getX()-measurment.getSVs().get(i).getEcefXpos(), 2)+Math.pow(intialGeuss.getY()-measurment.getSVs().get(i).getEcefYpos(), 2)+Math.pow(intialGeuss.getZ()-measurment.getSVs().get(i).getEcefZpos(), 2));
         }
-        double alpha[][] = creatAlpha(SV.length);
+        double alpha[][] = creatAlpha(numberOfSats);
 
         double erro=1;
         while(erro>0.01){
             for (int i = 0; i < alpha.length; i++) {
                 for (int j = 0; j < 3; j++) {
-                    alpha[i][0] = (intialGeuss.getX()-SV[i].getXposECEF())/(rao[i]);
-                    alpha[i][1] = (intialGeuss.getY()-SV[i].getYposECEF())/(rao[i]);
-                    alpha[i][2] = (intialGeuss.getZ()-SV[i].getZposECEF())/(rao[i]);
+                    alpha[i][0] = (intialGeuss.getX()-measurment.getSVs().get(i).getEcefXpos())/(rao[i]);
+                    alpha[i][1] = (intialGeuss.getY()-measurment.getSVs().get(i).getEcefYpos())/(rao[i]);
+                    alpha[i][2] = (intialGeuss.getZ()-measurment.getSVs().get(i).getEcefZpos())/(rao[i]);
 
                 }
             }
-            double[] drao = new double[SV.length];
+            double[] drao = new double[numberOfSats];
      //       setDrao(drao, rao, pseudoRanges, bu);
 
             Matrix a = new Matrix(alpha);
@@ -62,8 +64,8 @@ public class posCompute {
 
 
             for (int i = 0; i < rao.length; i++) {
-                rao[i] = Math.sqrt(Math.pow(intialGeuss.getX()-SV[i].getXposECEF(), 2)+Math.pow(intialGeuss.getY()-SV[i].getYposECEF(), 2)+Math.pow(intialGeuss.getZ()-SV[i].getZposECEF(), 2));
-            }
+                rao[i] = Math.sqrt(Math.pow(intialGeuss.getX()- measurment.getSVs().get(i).getEcefXpos(), 2)+Math.pow(intialGeuss.getY()-measurment.getSVs().get(i).getEcefYpos(), 2)+Math.pow(intialGeuss.getZ()-measurment.getSVs().get(i).getEcefZpos(), 2));
+        }
         }
     }
 }

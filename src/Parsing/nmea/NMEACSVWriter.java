@@ -51,7 +51,7 @@ public class NMEACSVWriter {
 		res += meas.getAltElip() + ",";
 		res += meas.getHDOP() + ",";
 		res += meas.getAllSvMeasurements().size()+", ";
-       /* Map<Integer, NMEASVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();
+       Map<Integer, NMEASVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();
         for (Integer prn : allPrns){
             NMEASVMeasurement nmeaSvMeasurement = mappedSvMeasurements.get(prn);
             if (nmeaSvMeasurement == null){
@@ -63,7 +63,6 @@ public class NMEACSVWriter {
 			res += nmeaSvMeasurement.getSnr() + ",";
 		}
 		res += "\r\n";
-		*/
 		return res;
 		
 	}

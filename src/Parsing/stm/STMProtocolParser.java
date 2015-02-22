@@ -1,5 +1,7 @@
-package Parsing.nmea;
+package Parsing.stm;
 
+import Parsing.nmea.NMEAProtocolParser;
+import Parsing.nmea.NMEASentence;
 import dataStructres.NMEASVMeasurement;
 import dataStructres.STMSVMeasurement;
 
@@ -8,15 +10,21 @@ import java.util.List;
 /**
  * Created by Roi on 1/31/2015.
  */
-public class STMProtocolParser extends NMEAProtocolParser{
+public class STMProtocolParser extends NMEAProtocolParser {
 
-    public static void addSVData2(List<NMEASVMeasurement> svList, String[] data) {
-        STMSVMeasurement curr = makeMeas(data);
-        svList.add(curr);
+    public STMProtocolParser() {
+        super();
     }
 
-    private static STMSVMeasurement makeMeas(String[] data) {
 
+    protected boolean isSVDataSentence(NMEASentence sentence){
+        boolean isOk = super.isSVDataSentence(sentence);
+        //todo roi: if you want in stm to parse only PSTMTS sentences, remove the isOK part.
+        return isOk || sentence.getSentenceName().equals("$PSTMTS");
+    }
+
+
+    protected void addSVData(List<NMEASVMeasurement> svList, String[] data) {
         int prn = Integer.parseInt(data[2]);
         double rawPR = Double.parseDouble(data[3]);
         double freq = Double.parseDouble(data[4]);
@@ -33,7 +41,7 @@ public class STMProtocolParser extends NMEAProtocolParser{
         double deltaPsv = Double.parseDouble(data[15]);
         double deltaPatm = Double.parseDouble(data[16]);
         STMSVMeasurement currentStmSVmesserment = new STMSVMeasurement(prn, rawPR, freq, lockSignal, Cn0, trackedTime, navigationData, EcefPosX, EcefPosY, EcefPosZ, EcefVelX, EceFVelY, EceFVelz, deltaPsv, deltaPatm);
-        return  currentStmSVmesserment;
+        svList.add(currentStmSVmesserment);
 
     }
 

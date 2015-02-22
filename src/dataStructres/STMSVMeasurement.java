@@ -12,14 +12,14 @@ The below equation fits GPS soley
 Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM + deltaP_sv
  */
     private double rawPR;
-    private double deltaP_ATM;
-    private double deltaP_SV;
+
     /*
     for GLONASS sats, the equation becomes PR = rawPR - deltaP_ATM + deltaP_sv + deltaP_glo
      */
     private double deltaP_glo;
     private double correctedPR;
-
+    double deltaP_ATM;
+    double deltaP_SV;
     protected Point3D ECEFpos;
     protected Point3D EcefVel;
     double frequncy;
@@ -38,8 +38,9 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
     public STMSVMeasurement(int prn, double rawPR, double freq, boolean lockSignal, int cn0, double trackedTime, boolean navigationData, double ecefPosX, double ecefPosY, double ecefPosZ, double ecefVelX, double eceFVelY, double eceFVelz, double deltaPsv, double deltaPatm) {
         //
         super(prn, cn0);
-        this.deltaP_ATM = deltaP_ATM;
-        this.deltaP_SV = deltaP_SV;
+        this.rawPR =rawPR;
+        this.deltaP_SV = deltaPsv;
+        this.deltaP_ATM = deltaPatm;
         this.ECEFpos = new Point3D(ecefPosX, ecefPosY, ecefPosZ);
         this.EcefVel = new Point3D(ecefVelX, eceFVelY, eceFVelz);
         this.frequncy = freq;
@@ -49,6 +50,8 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
 
 
     }
+
+    public static STMSVMeasurement nullMeas = new STMSVMeasurement(-1, -1, -1,false, -1, -1, false, -1, -1, -1, -1, -1, -1, -1, -1);
 
 
     public double getCorrectedPR() {
@@ -60,7 +63,7 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
 
     private void setCorrectedPR() //todo ROi add glonass correction.
     {
-        if(super.prn<40)
+
             this.correctedPR = this.rawPR -this.deltaP_ATM + this.deltaP_SV;
        // else if(super.prn>=40)
         //    this.correctedPR = this.rawPR -this.deltaP_ATM + this.deltaP_SV
@@ -69,6 +72,21 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
     public Point3D getECEFpos() {
         return ECEFpos;
     }
+
+    public double getEcefXpos() {return ECEFpos.getX();}
+
+    public double getEcefYpos() {return ECEFpos.getY();}
+
+    public double getEcefZpos() {return ECEFpos.getZ();
+    }
+
+    public double getEcefXvel() {return EcefVel.getX();
+    }
+
+    public double getEcefYvel() {return EcefVel.getY();}
+
+    public double getEcefZvel() {return EcefVel.getZ();}
+
 
     public Point3D getEcefVel() {
         return EcefVel;

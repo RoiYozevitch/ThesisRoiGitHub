@@ -109,17 +109,17 @@ public class NMEASentence {
 		sentencesToParse.put("$PSTMTS", new NMEASentence("$PSTMTS", PSTMTS));
 
 
-		Map<String, Integer> GPRMS = new TreeMap<String, Integer>();
-		GPRMS.put("UtcTime", 1);
-		GPRMS.put("status", 2);
-		GPRMS.put("lat", 3);
-		GPRMS.put("N_S", 4); // can be North or south/
-		GPRMS.put("lon", 5);
-		GPRMS.put("E_W", 6); // can be west or east
-		GPRMS.put("speedKm_H", 7);
-		GPRMS.put("course", 8);
-		GPRMS.put("date", 9);
-		sentencesToParse.put("$GPRMS", new NMEASentence("$GPRMS", GPRMS));
+		Map<String, Integer> GPRMC = new TreeMap<String, Integer>();
+		GPRMC.put("UtcTime", 1);
+		GPRMC.put("status", 2);
+		GPRMC.put("lat", 3);
+		GPRMC.put("N_S", 4); // can be North or south/
+		GPRMC.put("lon", 5);
+		GPRMC.put("E_W", 6); // can be west or east
+		GPRMC.put("speedKm_H", 7);
+		GPRMC.put("course", 8);
+		GPRMC.put("date", 9);
+		sentencesToParse.put("$GPRMC", new NMEASentence("$GPRMC", GPRMC));
 
 		Map<String, Integer> PSTMTG = new TreeMap<String, Integer>();
 		PSTMTG.put("weekNumber", 1);

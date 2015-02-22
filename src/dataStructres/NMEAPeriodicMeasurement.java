@@ -1,25 +1,31 @@
 package dataStructres;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class NMEAPeriodicMeasurement implements  Serializable{
 
 	private static final long serialVersionUID = 886357302201842088L;
 	
 	double lat, lon, alt, altElip, HDOP;
-	int numOfSVs;
-	List<NMEASVMeasurement> SVs;
 	long time;
+	double UtcTime;
+	private Map<Integer, NMEASVMeasurement> mappedSvMeasurements;
 
-	long UtcTime;
+	public NMEAPeriodicMeasurement(int i, double utcTime, double lat, double lon, double alt, double altElip, double hDOP) {
+		this.UtcTime=utcTime;
+		this.lat=lat;
+		this.lon=lon;
+		this.alt=alt;
+		this.altElip=altElip;
+		this.HDOP=hDOP;
+	}
 
 	public double getAltElip(){
 		return altElip;
 	}
 
-	public long getUtcTime() {
+	public double getUtcTime() {
 		return UtcTime;
 	}
 
@@ -28,7 +34,7 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	}
 	
 	public double getNumOfSVs(){
-		return SVs.size();
+		return mappedSvMeasurements.size();
 	}
 	
 	public double getLon() {
@@ -51,12 +57,12 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		return alt;
 	}
 	
-	public List<NMEASVMeasurement> getAllSvMeasurements(){
-		return SVs;
+	public Collection<NMEASVMeasurement> getAllSvMeasurements(){
+		return mappedSvMeasurements.values();
 	}
 	
 	public NMEASVMeasurement getSvMeasurement(int prn){
-		for (NMEASVMeasurement meas : this.SVs){
+		for (NMEASVMeasurement meas : mappedSvMeasurements.values()){
 			if (meas.getPrn() == prn){
 				return meas;
 			}
@@ -66,13 +72,13 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	
 	public List<Integer> getAllPRNs(){
 		List<Integer> res = new ArrayList<Integer>();
-		for (NMEASVMeasurement meas : this.SVs){
+		for (NMEASVMeasurement meas : mappedSvMeasurements.values()){
 			res.add(meas.getPrn());
 		}
 		return res;
 	}
 
-	public NMEAPeriodicMeasurement(long time, long UtcTime, double lat, double lon, double alt,
+	public NMEAPeriodicMeasurement(long time, double UtcTime, double lat, double lon, double alt,
 								   double altElip, double hDOP, List<NMEASVMeasurement> sVs) {
 		this.time = time;
 		this.UtcTime  = UtcTime;
@@ -81,7 +87,12 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		this.alt = alt;
 		this.altElip = altElip;
 		HDOP = hDOP;
-		SVs = sVs;
+		for (NMEASVMeasurement sv : sVs){
+			mappedSvMeasurements.put(sv.getPrn(), sv);
+		}
 	}
-	
+
+	public Map<Integer, NMEASVMeasurement> getMappedSvMeasurements() {
+		return mappedSvMeasurements;
+	}
 }

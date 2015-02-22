@@ -1,6 +1,9 @@
 package dataStructres;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Roi on 2/1/2015.
@@ -10,9 +13,41 @@ public class STMPeriodMeasurment extends NMEAPeriodicMeasurement {//todo : check
     private double oscilatorError;
     List<STMSVMeasurement> SVs;
 
+    public List<STMSVMeasurement> getSVs() {
+        return SVs;
+    }
+    private Map<Integer, STMSVMeasurement> mappedSvMeasurement;
 
-    public STMPeriodMeasurment(long time, long UtcTime, double lat, double lon, double alt, double altElip, double hDOP, List<NMEASVMeasurement> sVs) {
-        super(time, UtcTime, lat, lon, alt, altElip, hDOP, sVs);
+    public STMPeriodMeasurment( double UtcTime, double lat, double lon, double alt, double altElip, double hDOP, List<STMSVMeasurement> sVs) {
+        super(0, UtcTime, lat, lon, alt, altElip, hDOP);
+        this.SVs = sVs;
+    }
+
+    public Map<Integer, STMSVMeasurement> getMappedSvMeasurement() {
+        return mappedSvMeasurement;
+    }
+    public double getNumOfSVs(){
+        return mappedSvMeasurement.size();
+    }
+    public Collection<STMSVMeasurement> getAllSvMeasurement(){
+        return mappedSvMeasurement.values();
+    }
+
+    public NMEASVMeasurement getSvMeasurement(int prn){
+        for (NMEASVMeasurement meas : mappedSvMeasurement.values()){
+            if (meas.getPrn() == prn){
+                return meas;
+            }
+        }
+        return null;
+    }
+
+    public List<Integer> getAllPRNs(){
+        List<Integer> res = new ArrayList<Integer>();
+        for (NMEASVMeasurement meas : mappedSvMeasurement.values()){
+            res.add(meas.getPrn());
+        }
+        return res;
     }
 
 }
