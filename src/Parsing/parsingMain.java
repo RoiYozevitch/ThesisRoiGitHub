@@ -27,7 +27,7 @@ public class parsingMain {
             for (Integer key : mappedSvMeasurements.keySet()){
                 STMSVMeasurement stmSvMeasurement = (STMSVMeasurement)mappedSvMeasurements.get(key);
                 double correctedPR = stmSvMeasurement.getCorrectedPR();
-                System.out.println(key + "\t" + correctedPR);
+                System.out.println(key + "\t " + correctedPR);
             }
         }
 
