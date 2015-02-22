@@ -92,7 +92,7 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		}
 	}
 
-	public Map<Integer, NMEASVMeasurement> getMappedSvMeasurements() {
+	public Map<Integer, ? extends NMEASVMeasurement> getMappedSvMeasurements() {
 		return mappedSvMeasurements;
 	}
 }

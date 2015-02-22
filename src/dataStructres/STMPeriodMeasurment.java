@@ -23,7 +23,7 @@ public class STMPeriodMeasurment extends NMEAPeriodicMeasurement {//todo : check
         this.SVs = sVs;
     }
 
-    public Map<Integer, STMSVMeasurement> getMappedSvMeasurement() {
+    public Map<Integer, ? extends NMEASVMeasurement> getMappedSvMeasurements() {
         return mappedSvMeasurement;
     }
     public double getNumOfSVs(){
