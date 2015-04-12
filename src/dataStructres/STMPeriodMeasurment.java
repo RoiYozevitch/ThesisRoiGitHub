@@ -1,9 +1,6 @@
 package dataStructres;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Roi on 2/1/2015.
@@ -19,11 +16,15 @@ public class STMPeriodMeasurment extends NMEAPeriodicMeasurement {//todo : check
     private Map<Integer, STMSVMeasurement> mappedSvMeasurement;
 
     public STMPeriodMeasurment( double UtcTime, double lat, double lon, double alt, double altElip, double hDOP, List<STMSVMeasurement> sVs) {
-        super(0, UtcTime, lat, lon, alt, altElip, hDOP);
+        super( UtcTime, lat, lon, alt, altElip, hDOP);
         this.SVs = sVs;
+        this.mappedSvMeasurement = new HashMap<>();
+        for (STMSVMeasurement svm : sVs){
+            mappedSvMeasurement.put(svm.getPrn(), svm);
+        }
     }
 
-    public Map<Integer,? extends NMEASVMeasurement> getMappedSvMeasurements() {
+    public Map<Integer,STMSVMeasurement> getMappedSvMeasurements() {
         return mappedSvMeasurement;
     }
     public double getNumOfSVs(){
@@ -50,4 +51,7 @@ public class STMPeriodMeasurment extends NMEAPeriodicMeasurement {//todo : check
         return res;
     }
 
+    public void setSVs(List<STMSVMeasurement> SVs) {
+        this.SVs = SVs;
+    }
 }

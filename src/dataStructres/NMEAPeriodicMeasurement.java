@@ -12,13 +12,14 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	double UtcTime;
 	private Map<Integer, NMEASVMeasurement> mappedSvMeasurements;
 
-	public NMEAPeriodicMeasurement(int i, double utcTime, double lat, double lon, double alt, double altElip, double hDOP) {
+	public NMEAPeriodicMeasurement(double utcTime, double lat, double lon, double alt, double altElip, double hDOP) {
 		this.UtcTime=utcTime;
 		this.lat=lat;
 		this.lon=lon;
 		this.alt=alt;
 		this.altElip=altElip;
 		this.HDOP=hDOP;
+        this.mappedSvMeasurements = new HashMap<>();
 	}
 
 	public double getAltElip(){
@@ -80,6 +81,7 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 
 	public NMEAPeriodicMeasurement(long time, double UtcTime, double lat, double lon, double alt,
 								   double altElip, double hDOP, List<NMEASVMeasurement> sVs) {
+        this.mappedSvMeasurements = new HashMap<>();
 		this.time = time;
 		this.UtcTime  = UtcTime;
 		this.lat = lat;

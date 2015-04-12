@@ -8,6 +8,9 @@ import dataStructres.STMSVMeasurement;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +20,7 @@ public class NMEAProtocolParser {
 	public NMEAProtocolParser() {
 	}
 
-	public List<NMEAPeriodicMeasurement> parse(String path) throws IOException{
+	public List<NMEAPeriodicMeasurement> parse(String path) throws IOException, ParseException {
 		List<NMEAPeriodicMeasurement> result = new ArrayList<NMEAPeriodicMeasurement>();
 		BufferedReader br = new BufferedReader(new FileReader(path)); //todo throw spesific exeption. Check where an NMEA msg starts
 		String line;
@@ -45,7 +48,8 @@ public class NMEAProtocolParser {
 			}
 			if(currentSentence.getSentenceName().equals("$GPRMC"))
 			{
-				UtcTime = Long.parseLong(data[currentSentence.getfieldsIndexByName("UtcTime")]);
+                DateFormat df = new SimpleDateFormat("HHmmss.SSS");
+                UtcTime  = df.parse(data[currentSentence.getfieldsIndexByName("UtcTime")]).getTime();
 			}
 			if (currentSentence.getSentenceName().equals("$GPGGA")){
 				time = Long.parseLong(data[currentSentence.getfieldsIndexByName("time")].replace(".", ""));

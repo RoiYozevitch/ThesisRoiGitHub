@@ -269,6 +269,11 @@ public class SirfPeriodicMeasurement implements Serializable{
 	}
 
 
+    public void computePseudoRangeLeastSquare()
+    {
+
+    }
+
     public void setxExGPSWeek(int GPSWeek)
     {
         this.GPSWeek=GPSWeek;

@@ -51,7 +51,7 @@ public class NMEACSVWriter {
 		res += meas.getAltElip() + ",";
 		res += meas.getHDOP() + ",";
 		res += meas.getAllSvMeasurements().size()+", ";
-       Map<Integer, NMEASVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();
+       Map<Integer,? extends NMEASVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();//todo Ayal : why not working here and do work in STM?
         for (Integer prn : allPrns){
             NMEASVMeasurement nmeaSvMeasurement = mappedSvMeasurements.get(prn);
             if (nmeaSvMeasurement == null){
@@ -66,7 +66,7 @@ public class NMEACSVWriter {
 		return res;
 		
 	}
-	
+
 	
 	
 

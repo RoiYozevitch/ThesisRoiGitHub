@@ -14,6 +14,14 @@ public class Point3D  extends Point2D{
 
     }
 
+    public Point3D(Point3D pos) {
+
+        super(pos.getX(), pos.getY());
+        this.z = pos.getZ();
+
+
+    }
+
     public double getZ() {
         return z;
     }
@@ -112,5 +120,6 @@ public class Point3D  extends Point2D{
                 " z=" + z +
                 '}';
     }
+
 }
 

@@ -18,6 +18,13 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
      */
     private double deltaP_glo;
     private double correctedPR;
+
+    public boolean isGoodSVforPseudoRangeComputation() {
+        return isGoodSVforPseudoRangeComputation;
+    }
+
+    boolean isGoodSVforPseudoRangeComputation;
+    private double PRwithDeltaT;
     double deltaP_ATM;
     double deltaP_SV;
     protected Point3D ECEFpos;
@@ -64,10 +71,28 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
     private void setCorrectedPR() //todo ROi add glonass correction.
     {
 
-            this.correctedPR = this.rawPR -this.deltaP_ATM + this.deltaP_SV;
+        if(this.deltaP_ATM!=0 && this.deltaP_SV!=0) {
+            this.correctedPR = this.rawPR - this.deltaP_ATM + this.deltaP_SV;
+            isGoodSVforPseudoRangeComputation = true;
+        }
+
+        else
+            isGoodSVforPseudoRangeComputation = false;
+
        // else if(super.prn>=40)
         //    this.correctedPR = this.rawPR -this.deltaP_ATM + this.deltaP_SV
     }
+
+    public void setPseudoRangeWithDeltaT(double pseudoRangeWithDeltaT)
+    {
+        this.PRwithDeltaT = pseudoRangeWithDeltaT;
+    }
+
+    public double getPRwithDeltaT()
+    {
+        return this.PRwithDeltaT;
+    }
+
 
     public Point3D getECEFpos() {
         return ECEFpos;
@@ -104,4 +129,7 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
         return navigationData;
     }
 
+    public double getDeltaATM() {
+        return this.deltaP_ATM;
+    }
 }

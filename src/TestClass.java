@@ -16,16 +16,16 @@ public class TestClass {
 
 
       //  BuildingFactoryTest();
-        STMParserTest();
+       // STMParserTest();
 
 
 
 
     }
 
-    public static void STMParserTest() throws IOException {
+  /*  public static void STMParserTest() throws IOException {
         String NMEAFilePath = "STMsampleFile.txt";
-        List<STMPeriodMeasurment> meas = STMProtocolParser.parse(NMEAFilePath);
+        List<STMPeriodMeasurment> meas = STMProtocolParser.parse(NMEAFilePath);//todo ayal : why the error?
         System.out.println("SSIZE  OF LIST = " + meas.size());
         for(int i=0; i<meas.size();  i++)
         {
@@ -39,6 +39,7 @@ public class TestClass {
         }
 
     }
+    */
 
     public static void BuildingFactoryTest()
     {

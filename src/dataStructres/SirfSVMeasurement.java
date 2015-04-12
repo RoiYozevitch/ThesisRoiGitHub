@@ -19,6 +19,7 @@ public class SirfSVMeasurement {
     int state;
 	double clockBias;
     public double LOSLiklihood;
+    private double pseudoRangeWithDeltaT;
 
     public boolean isOKSVM() {
         return OKSVM;
@@ -468,7 +469,13 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
 	public void setState(int state) {
 		this.state = state;
 	}
-	
 
 
+    public void setPseudoRangeWithDeltaT(double pseudoRangeWithDeltaT) {
+        this.pseudoRangeWithDeltaT = pseudoRangeWithDeltaT;
+    }
+
+    public double getPseudoRangeWithDeltaT() {
+        return pseudoRangeWithDeltaT;
+    }
 }

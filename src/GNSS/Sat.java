@@ -20,6 +20,13 @@ public class Sat {
         this.satID = satID;
     }
 
+    public Sat(double azimuth, double elevetion, int satID)
+    {
+        this.azimuth = azimuth;
+        this.elevetion = elevetion;
+        this.satID = satID;
+    }
+
     public double distanceFromSatToPos(Point3D pos)
     {
         return this.satPosInECEF.distance(pos);

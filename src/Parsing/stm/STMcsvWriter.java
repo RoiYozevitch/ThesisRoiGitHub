@@ -24,6 +24,7 @@ public class STMcsvWriter {
         }
 
     }
+
     public static void printStmToFile(List<STMPeriodMeasurment> measurements, String path) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + "parsed.csv"));
 
@@ -31,57 +32,61 @@ public class STMcsvWriter {
         writer.write(newLine);
         Set<Integer> allPrns = new TreeSet<Integer>();
 
-        for (STMPeriodMeasurment m : measurements){
+        for (STMPeriodMeasurment m : measurements) {
             allPrns.addAll(m.getAllPRNs());
         }
-        for (int i = 0; i<measurements.size(); i++){
-            String csvString = toCsvString(measurements.get(i), allPrns);
+        for (int i = 0; i < measurements.size(); i++) {
+            String csvString = toCsvString((measurements.get(i)), allPrns);
             writer.write(csvString);
         }
         writer.flush();
         writer.close();
 
 
-
     }
 
     private static String toCsvString(STMPeriodMeasurment meas, Set<Integer> allPrns) {
         String res = "";
-        if (meas.getTime() == 0l){
+        if (meas.getTime() == 0l) {
             return res;
         }
-        res += meas.getTime()+ ",";
+        res += meas.getTime() + ",";
         res += meas.getLat() + ",";
         res += meas.getLon() + ",";
         res += meas.getAlt() + ",";
         res += meas.getAltElip() + ",";
         res += meas.getHDOP() + ",";
-        res += meas.getAllSvMeasurements().size()+", ";
-        Map<Integer, STMSVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurement();
-        for (Integer prn : allPrns){
-            STMSVMeasurement SvMeasurement = mappedSvMeasurements.get(prn);
-            if (SvMeasurement == null){
-                SvMeasurement = SvMeasurement.nullMeas;
+        res += meas.getAllSvMeasurements().size() + ", ";
+
+        Map<Integer, STMSVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();
+        //  Map<Integer, STMSVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurement();
+        for (Integer key : mappedSvMeasurements.keySet()) {
+            STMSVMeasurement stmSvMeasurement = mappedSvMeasurements.get(key);
+            double correctedPR = stmSvMeasurement.getCorrectedPR();
+            System.out.println(key + "\t " + correctedPR);
+
+            if (stmSvMeasurement == null) {
+                stmSvMeasurement = stmSvMeasurement.nullMeas;
+
+                res += stmSvMeasurement.getPrn() + ",";
+                res += stmSvMeasurement.getAz() + ",";
+                res += stmSvMeasurement.getEl() + ",";
+                res += stmSvMeasurement.getSnr() + ",";
+                res += stmSvMeasurement.getEcefXpos() + ",";
+                res += stmSvMeasurement.getEcefYpos() + ",";
+                res += stmSvMeasurement.getEcefZpos() + ",";
+                res += stmSvMeasurement.getEcefXvel() + ",";
+                res += stmSvMeasurement.getEcefYvel() + ",";
+                res += stmSvMeasurement.getEcefZpos() + ",";
+                res += stmSvMeasurement.getFrequncy() + ",";
+                res += stmSvMeasurement.getCorrectedPR() + ",";
+                res += "\r\n";
             }
-            res += SvMeasurement.getPrn() + ",";
-            res += SvMeasurement.getAz() + ",";
-            res += SvMeasurement.getEl() + ",";
-            res += SvMeasurement.getSnr() + ",";
-            res += SvMeasurement.getEcefXpos()+",";
-            res += SvMeasurement.getEcefYpos()+",";
-            res += SvMeasurement.getEcefZpos()+",";
-            res += SvMeasurement.getEcefXvel()+",";
-            res += SvMeasurement.getEcefYvel()+",";
-            res += SvMeasurement.getEcefZpos()+",";
-            res += SvMeasurement.getFrequncy()+",";
-            res += SvMeasurement.getCorrectedPR()+",";
-
-
         }
-        res += "\r\n";
         return res;
 
-    }
+    }//end of function (toCsvString)
 }
+
 
 

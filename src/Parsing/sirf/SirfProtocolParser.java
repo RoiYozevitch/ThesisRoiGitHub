@@ -17,7 +17,7 @@ public class SirfProtocolParser {
 
     private static Set<Integer> prns = new HashSet<Integer>();
 	
-	public static void main(String[] args){
+	/*public static void main(String[] args){
 		try {
 			List<SirfPeriodicMeasurement> me = SirfProtocolParser.parseFile("c://Parsing//test5.gps");
 			SirfCsvWriter.printToFile(me, "c://Parsing//ggg.csv");
@@ -26,7 +26,7 @@ public class SirfProtocolParser {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 
     public static List<Integer> getParsedPrnsSorted(){
         ArrayList<Integer> result = new ArrayList<Integer>(prns);
@@ -333,11 +333,13 @@ public class SirfProtocolParser {
 				String sec = line[currentMessage.getfieldsIndexByName("UTC Second")].replace(".", "");
 				currentMeasurement.setTime(Long.parseLong(year + month + day + hour + minute + sec) / 1000);
 				String lat = line[currentMessage.getfieldsIndexByName("Lat")];
-				lat = lat.substring(0, 2) + "." + lat.substring(2);
+				if(!lat.equals("0")) //todo  ayal - right?
+                    lat = lat.substring(0, 2) + "." + lat.substring(2);
 				currentMeasurement.setLat(
 						Double.parseDouble(lat));
 				String lon = line[currentMessage.getfieldsIndexByName("Lon")];
-				lon = lon.substring(0, 2) + "." + lon.substring(2);
+                if(!lon.equals("0"))
+                    lon = lon.substring(0, 2) + "." + lon.substring(2);
 				currentMeasurement.setLon(
 						Double.parseDouble(lon));
 				currentMeasurement.setAltEllipsoid(
