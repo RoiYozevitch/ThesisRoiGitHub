@@ -498,11 +498,14 @@ public class SirfPeriodicMeasurement implements Serializable{
 	public double getAlt() {
 		return getAltEllipsoid();
 	}
-	
 
-	
 
-	
-	
+    public double getResidual(Integer prn) {
 
+        SirfSVMeasurement sirfSVMeasurement = getSatellites().get(prn);
+        double dist = Math.sqrt(Math.pow(this.getxPos()-sirfSVMeasurement.getxPos(), 2) + Math.pow(this.getyPos()-sirfSVMeasurement.getyPos(), 2) +Math.pow(this.getzPos()-sirfSVMeasurement.getzPos(), 2));
+        double residual = dist - sirfSVMeasurement.getPseudorange();
+        return residual;
+
+    }
 }

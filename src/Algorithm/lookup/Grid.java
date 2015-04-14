@@ -62,16 +62,23 @@ public class Grid {
 
     private Point2D getContainingBinCenter(Point2D point){
         //todo roi do it
+        //given arbitrary point, find nearest center of bin.
         return null;
     }
 
     private Set<Point2D> getCornersOfBin(Point2D binCenter){
         //todo roi - find points with resolution/2
+        //given bin center, return 4 corders of bin's grid.
+        int halfRes = (int)((double)this.resolution / 2);
+        Set<Point2D> result = new HashSet<>();
+        result.add(pointArray[(int)(binCenter.getX() - halfRes) / resolution][(int)(binCenter.getY() - halfRes) / resolution]);
+        result.add(pointArray[(int)binCenter.getX() + halfRes][(int)binCenter.getY() - halfRes]);
+        result.add(pointArray[(int)binCenter.getX() - halfRes][(int)binCenter.getY() + halfRes]);
+        result.add(pointArray[(int)binCenter.getX() + halfRes][(int)binCenter.getY() + halfRes]);
         return null;
     }
 
     private Map<Integer, Set<Building>> calculateBuildingsLOSPerAzimuth(Set<Point2D> binCorners, int azimuthInterval) throws Exception {
-        //todo roi- this method is called during preprocessing, needs to
         if (azimuthInterval % 360 != 0){
             throw new Exception("BAD BAD BAD");
         }

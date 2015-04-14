@@ -2,6 +2,7 @@ package Parsing;
 
 import Algorithm.PseudoRangeComp;
 import Parsing.sirf.SirfCsvWriter;
+import Parsing.sirf.SirfMLCsvWriter;
 import Parsing.sirf.SirfProtocolParser;
 import Parsing.stm.STMProtocolParser;
 import Parsing.stm.STMcsvWriter;
@@ -20,12 +21,33 @@ public class parsingMain {
 
     public static void main(String[] args) throws IOException, ParseException {
 
-        main3();
+      //  SirfParsingML();
+        PseudoRangeCompute();
 
 
     }
 
-    public static void main3()
+
+
+
+    public static void SirfParsingML() {
+
+        String SirfFilePath = "POINT_A_STATIONARY.txt";
+        String outputFile = "POINT_A_STATIONARY_ML";
+
+        SirfProtocolParser parser = new SirfProtocolParser();
+        try {
+            List<SirfPeriodicMeasurement> sirfMeas  = parser.parseFile(SirfFilePath);
+            SirfMLCsvWriter.printToFile(sirfMeas, outputFile);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public static void PseudoRangeCompute()
     {
         String StmFilePath = "route_ABCD_STM_1Hz_twice.txt";
         STMProtocolParser stmParser = new STMProtocolParser();
@@ -38,7 +60,7 @@ public class parsingMain {
             e.printStackTrace();
         }
         //todo roi: learn this code.
-      stmMeas = stmParser.ClearBadSattelites(stmMeas);
+      stmMeas = stmParser.ClearBadSattelitesOnlyGps(stmMeas);
 
         for (STMPeriodMeasurment meas : stmMeas) {
             Map<Integer, STMSVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();

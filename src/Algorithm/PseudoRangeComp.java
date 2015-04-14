@@ -83,8 +83,8 @@ public class PseudoRangeComp {
 
     static public void computePseudoRangeFromStmMessurment(STMPeriodMeasurment me) {
 
-        Point3D intialGeuss = new Point3D(0,0,0);
-        computePseudoRangeFromStmMessurment(me, intialGeuss);
+        Point3D initialGeuss = new Point3D(0,0,0);
+        computePseudoRangeFromStmMessurment(me, initialGeuss);
     }
 
     static public void computePseudoRangeFromStmMessurment(STMPeriodMeasurment me, Point3D intialGeuss)
@@ -92,12 +92,13 @@ public class PseudoRangeComp {
 
 
         int numberOfSats = me.getSVs().size();
+        System.out.println("number of sats "+ numberOfSats);
         if (numberOfSats<4)
         {
             System.out.println("Not enough SV for computation");
             return;
         }
-     //   numberOfSats = 4;
+     //  numberOfSats = 4;
         double[] pseudoRanges = new double[numberOfSats];
         double rao[] = new double[numberOfSats];
         double bu=0;
@@ -109,6 +110,7 @@ public class PseudoRangeComp {
         {
             rao[i] = Math.sqrt(Math.pow(intialGeuss.getX()-me.getSVs().get(i).getEcefXpos(), 2)+Math.pow(intialGeuss.getY()-me.getSVs().get(i).getEcefYpos(), 2)+Math.pow(intialGeuss.getZ()-me.getSVs().get(i).getEcefZpos(), 2));
             pseudoRanges[i] = me.getSVs().get(i).getCorrectedPR();
+            System.out.println(me.getSVs().get(i).getPrn()+ " ");
          //   System.out.println("  PRN " + me.getSVs().get(i).getPrn() + ":" + pseudoRanges[i] + me.getSVs().get(i).getECEFpos());
         }
 

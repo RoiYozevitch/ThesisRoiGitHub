@@ -26,13 +26,13 @@ public class LookupTable {
         //todo roi- get all point2Ds from grid, put in relation with possible azimuths and correct buildings
         int xDim = grid.getXdimmension();
         int yDim = grid.getYdimmension();
-        int azimutResolution = 5; //in degrees
-        for(int az = 0; az <360; az+=azimutResolution)//run of all 72 (360/5) diffrent angles
+        int azimutResolution = 6; //in degrees
+        for(int az = azimutResolution/2; az <=360-azimutResolution/2; az+=azimutResolution)//run of all 72 (360/5) diffrent angles
         for(int i=0; i<xDim; i++)
             for(int j=0; j<yDim; j++)
             {
                 Point2D tmpPoint = grid.getPointfromGrid(i,j);
-               // relation.setValue(tmpPoint, az, LosAlgorithm.findBuildings(tmpPoint, az, allBuildings));
+                relation.setValue(tmpPoint, az, LosAlgorithm.findBuildings(tmpPoint, az, allBuildings, azimutResolution));
             }
 
         //Point2D point = new Point2D(0, 0);
@@ -41,7 +41,7 @@ public class LookupTable {
     }
 
     public Set<Building> getBuildings(Point2D me, Sat sat){
-        //todo roi- use grid to find best point or points, find azimuths from points to sat, get buildings from relation.
+       //Point2D centerBin  =
         return null;
     }
 }

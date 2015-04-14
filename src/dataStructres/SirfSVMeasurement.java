@@ -2,6 +2,8 @@ package dataStructres;
 
 import Geometry.Point3D;
 
+import java.util.Arrays;
+
 public class SirfSVMeasurement {
 	
 	double xPos;
@@ -136,11 +138,10 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
 
     public int getMaxCn0()
     {
-
         int result= CNo[0];
         for(int i=1;i<10; i++)
        {
-        if(CNo[i]>CNo[i-1])
+        if(CNo[i]>result)
             result = CNo[i];
 
        }
@@ -169,7 +170,7 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
         int result= filteredCNo[0];
         for(int i=1;i<10; i++)
         {
-            if(filteredCNo[i]>filteredCNo[i-1])
+            if(filteredCNo[i]>result)
                 result = filteredCNo[i];
 
         }
@@ -182,7 +183,7 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
         int result= CNo[0];
         for(int i=1;i<10; i++)
         {
-            if(CNo[i]<CNo[i-1])
+            if(CNo[i]<result)
                 result = CNo[i];
 
         }
@@ -194,7 +195,7 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
         int result= filteredCNo[0];
         for(int i=1;i<10; i++)
         {
-            if(filteredCNo[i]<filteredCNo[i-1])
+            if(filteredCNo[i]<result)
                 result = filteredCNo[i];
 
         }

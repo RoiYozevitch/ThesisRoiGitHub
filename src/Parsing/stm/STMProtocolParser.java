@@ -117,7 +117,7 @@ public class STMProtocolParser {
 
         for(int i=0; i<Svmeas.size(); i++)
         {
-            if(Svmeas.get(i).isGoodSVforPseudoRangeComputation())
+            if(Svmeas.get(i).isGoodSVforPseudoRangeComputation() && Svmeas.get(i).getPrn()<40)
               tmpList.add(Svmeas.get(i));//todo Maybe there is a better way?
         }
 
@@ -125,7 +125,7 @@ public class STMProtocolParser {
         return meas;
     }
 
-    public List<STMPeriodMeasurment> ClearBadSattelites(List<STMPeriodMeasurment> meas)
+    public List<STMPeriodMeasurment> ClearBadSattelitesOnlyGps(List<STMPeriodMeasurment> meas)
     {
 
         for(int i=0; i < meas.size(); i++) {
