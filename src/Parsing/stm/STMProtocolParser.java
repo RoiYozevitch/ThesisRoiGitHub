@@ -143,13 +143,16 @@ public class STMProtocolParser {
 
 
     protected void addSVData(List<STMSVMeasurement> svList, String[] data) {
+        boolean navigationData = false;
         int prn = Integer.parseInt(data[2]);
         double rawPR = Double.parseDouble(data[3]);
         double freq = Double.parseDouble(data[4]);
         boolean lockSignal = Boolean.parseBoolean(data[5]);
         int Cn0 = Integer.parseInt(data[6]);
         double trackedTime = Double.parseDouble(data[7]);
-        boolean navigationData = Boolean.parseBoolean(data[8]);
+        int isNavigation = Integer.parseInt(data[8]);
+       if(isNavigation==1)
+           navigationData = true;
         double EcefPosX = Double.parseDouble(data[9]);
         double EcefPosY = Double.parseDouble(data[10]);
         double EcefPosZ = Double.parseDouble(data[11]);

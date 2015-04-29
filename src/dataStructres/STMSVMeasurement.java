@@ -20,7 +20,7 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
     private double correctedPR;
 
     public boolean isGoodSVforPseudoRangeComputation() {
-        return isGoodSVforPseudoRangeComputation;
+        return this.isGoodSVforPseudoRangeComputation;
     }
 
     boolean isGoodSVforPseudoRangeComputation;
@@ -42,9 +42,11 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
         setCorrectedPR();
     }
 
-    public STMSVMeasurement(int prn, double rawPR, double freq, boolean lockSignal, int cn0, double trackedTime, boolean navigationData, double ecefPosX, double ecefPosY, double ecefPosZ, double ecefVelX, double eceFVelY, double eceFVelz, double deltaPsv, double deltaPatm) {
+    public STMSVMeasurement(int prn, double rawPR, double freq, boolean lockSignal, int cn0, double trackedTime, boolean navigationData, double ecefPosX, double ecefPosY, double ecefPosZ, double ecefVelX, double eceFVelY, double eceFVelz, double deltaPsv, double deltaPatm)
+    {
         //
         super(prn, cn0);
+
         this.rawPR =rawPR;
         this.deltaP_SV = deltaPsv;
         this.deltaP_ATM = deltaPatm;
@@ -71,10 +73,10 @@ Correct PseudoRange (before clock bias computation) is :PR = rawPR - deltaP_ATM 
     private void setCorrectedPR() //todo ROi add glonass correction.
     {
 
-        if(this.deltaP_ATM!=0 && this.deltaP_SV!=0) {
             this.correctedPR = this.rawPR - this.deltaP_ATM + this.deltaP_SV;
+            if(this.isNavigationData())
             isGoodSVforPseudoRangeComputation = true;
-        }
+
 
         else
             isGoodSVforPseudoRangeComputation = false;

@@ -17,6 +17,7 @@ public class GeomUtils {
 
 
      */
+
     public static boolean intersectRayWithPlane(Line3D ray,
                                                  Wall wall) {
         Point3D[] PointArray = wall.getPoint3dArray();
@@ -46,4 +47,12 @@ public class GeomUtils {
                 && v >= 0.0f && v <= dS31.dotProduct(dS31));
     }
 
+    public static double ConvertSatAzimutInDegreesTOfitUnitCircle(double azimuth) {
+        if(azimuth<0)
+            azimuth += 360;
+        double newAzimut =450 - azimuth;
+        if(newAzimut>=360)
+            newAzimut -=360;
+        return newAzimut;
+    }
 }

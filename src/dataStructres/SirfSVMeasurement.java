@@ -1,5 +1,6 @@
 package dataStructres;
 
+import GNSS.Sat;
 import Geometry.Point3D;
 
 import java.util.Arrays;
@@ -90,7 +91,7 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
     }
 
     public void setLOS(Boolean LOS) {
-        this.LOS = LOS;
+        this.LOS = LOS; //if los this is ture
     }
 
     Boolean LOS;  //LOS is True  - NLOS is false
@@ -478,5 +479,21 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
 
     public double getPseudoRangeWithDeltaT() {
         return pseudoRangeWithDeltaT;
+    }
+
+    public Point3D getSatPosInEcef() {
+        Point3D satPosInEcef = new Point3D(this.getxPos(), this.getyPos(), this.getzPos());
+        return satPosInEcef;
+    }
+
+    public Sat getSatClass(Integer PRN) {
+
+        double az = this.getAzimuth();
+        double el =this.getElevation();
+        Point3D satPosECEF = this.getSatPosInEcef();
+        Sat newSat = new Sat(satPosECEF, az, el, PRN);
+        return newSat;
+
+
     }
 }

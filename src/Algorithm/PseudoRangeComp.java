@@ -92,13 +92,18 @@ public class PseudoRangeComp {
 
 
         int numberOfSats = me.getSVs().size();
+       // numberOfSats = 4;
         System.out.println("number of sats "+ numberOfSats);
         if (numberOfSats<4)
         {
             System.out.println("Not enough SV for computation");
             return;
         }
-     //  numberOfSats = 4;
+       numberOfSats = 4;
+        for(int i=0; i<numberOfSats; i++)
+        {
+            System.out.println("PRN "+ me.getSVs().get(i).getPrn()+". Position "+ me.getSVs().get(i).getECEFpos()+ ". PseudoRnage is "+me.getSVs().get(i).getCorrectedPR() +". Navigation data "+ me.getSVs().get(i).isNavigationData() );
+        }
         double[] pseudoRanges = new double[numberOfSats];
         double rao[] = new double[numberOfSats];
         double bu=0;

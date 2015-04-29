@@ -1,6 +1,9 @@
 package Parsing.sirf;
 
 
+import Algorithm.LosAlgorithm;
+import GNSS.Sat;
+import Geometry.Building;
 import Geometry.Point3D;
 import dataStructres.SirfPeriodicMeasurement;
 import dataStructres.SirfSVMeasurement;
@@ -380,5 +383,30 @@ public class SirfProtocolParser {
 		}
 		return null;
 	}
-	
+
+    public void ComputeLosNLOSFromStaticPoint(List<SirfPeriodicMeasurement> sirfMeas, List<Building> buildings1, Point3D receiverPointInUTM) {
+
+        List<Sat> sats = new ArrayList<>();
+        for(SirfPeriodicMeasurement meas : sirfMeas)
+        {
+
+
+
+        }
+    }
+    public void ComputeLosNLOS(List<SirfPeriodicMeasurement> sirfMeas, List<Building> buildings1) {
+
+        Sat sat =null;
+        for(int i=2; i<sirfMeas.size(); i++ )
+        {
+            Point3D reciverPos = sirfMeas.get(i).GetPosInUTM();
+
+                for (Integer Prn : sirfMeas.get(i).getSatellites().keySet()) {
+                    sat = sirfMeas.get(i).getSatellites().get(Prn).getSatClass(Prn);
+                    Boolean isLos = LosAlgorithm.ComputeLos(reciverPos, buildings1, sat);
+                    sirfMeas.get(i).getSatellites().get(Prn).setLOS(isLos);
+
+            }
+        }
+    }
 }

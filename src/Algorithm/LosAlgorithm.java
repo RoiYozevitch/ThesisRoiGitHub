@@ -2,9 +2,7 @@ package Algorithm;
 
 import GNSS.Sat;
 import Geometry.*;
-import Utils.GeomUtils;
 
-import java.awt.geom.Line2D;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +17,7 @@ public class LosAlgorithm {
     {
        Line3D ray = new Line3D(pos, sat.getAzimuth(),sat.getElevetion(), 1000000);
 
-        return  !GeomUtils.intersectRayWithPlane(ray, wall); // if LOS, return true. else, return false.
+       return !wall.isIntersecting(ray);
 
     }
 
@@ -45,16 +43,6 @@ public class LosAlgorithm {
         return true;
     }
 
-    public static boolean ComputeLos(Point3D pos, List<Building> buildings, List<Sat> sattelites)
-    {
-
-        for(Sat sat : sattelites)
-        {
-            if(!ComputeLos(pos, buildings, sat))
-                return false;
-        }
-        return true;
-    }
 
 
     public static Set<Building> findBuildings(Point2D base, double az, List<Building> allBuildings, int azimutResolution) {

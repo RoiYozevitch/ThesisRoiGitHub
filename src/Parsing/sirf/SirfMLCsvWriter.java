@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SirfMLCsvWriter {
     private static String newLine = "\r\n";
-    private static String header = "UTC Time, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, HDOP, Lat, Lon, Alt (Elipsoide), Alt (AMSL), Speed, Course, Estimated Horizontal Positioning Error, Estimated Vertical Positioning Error, Estimated Horizontal Velocity Error, Clock Bias, Clock Bias Error, Clock Drift, Clock Drift Error, EXTENDED GPS Week, GPS TOW, SVs number, Clock Drift 7, Clock Bias 7, Estimated GPS Time, PRN, GPS Software Time, Azimuth, Elevation, State, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Pseudorange, residuals, C/No Max, C/No Min, C/No Delta, Carrier Frequency, Carrier Phase, Delta Range Interval, Mean Delta Range Time, Clock Bias, Clock Drift, Ionospheric Delay, Filtered C/No Max, Filtered C/No Min, Filtered C/No Delta" + newLine;
+    private static String header = "UTC Time, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, HDOP, Lat, Lon, Alt (Elipsoide), Alt (AMSL), Speed, Course, Estimated Horizontal Positioning Error, Estimated Vertical Positioning Error, Estimated Horizontal Velocity Error, Clock Bias, Clock Bias Error, Clock Drift, Clock Drift Error, EXTENDED GPS Week, GPS TOW, SVs number, Clock Drift 7, Clock Bias 7, Estimated GPS Time, PRN, GPS Software Time, Azimuth, Elevation, State, X Position, Y Position, Z Position, X Velocity, Y Velocity, Z Velocity, Pseudorange, residuals, C/No Max, C/No Min, C/No Delta, Carrier Frequency, Carrier Phase, Delta Range Interval, Mean Delta Range Time, Clock Bias, Clock Drift, Ionospheric Delay, Filtered C/No Max, Filtered C/No Min, Filtered C/No Delta, Los Value" + newLine;
 
     public static void printToFile(List<SirfPeriodicMeasurement> measurements, String path) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(path + ".csv"));
@@ -99,11 +99,17 @@ public class SirfMLCsvWriter {
                     res += sv.getMaxFilterCn0()+",";
                     res += sv.getMinFilterCn0()+",";
                     res += sv.getFilteredCNo()[9] - sv.getFilteredCNo()[0]+",";
+                    Boolean los = sv.getLOS();
+                    if (los != null){
+                        res += (los ? "LOS" : "NLOS") +",";
+                    }
+                    else{
+                        res += "null,";
+                    }
                 }
             res += "\r\n";
         }
         return res;
-
     }
 
 

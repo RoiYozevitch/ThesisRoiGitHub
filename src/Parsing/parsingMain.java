@@ -1,6 +1,11 @@
 package Parsing;
 
+import Algorithm.LosAlgorithm;
 import Algorithm.PseudoRangeComp;
+import GNSS.Sat;
+import Geometry.Building;
+import Geometry.BuildingsFactory;
+import Geometry.Point3D;
 import Parsing.sirf.SirfCsvWriter;
 import Parsing.sirf.SirfMLCsvWriter;
 import Parsing.sirf.SirfProtocolParser;
@@ -22,27 +27,65 @@ public class parsingMain {
     public static void main(String[] args) throws IOException, ParseException {
 
       //  SirfParsingML();
-        PseudoRangeCompute();
+        //PseudoRangeCompute();
+        try {
+            TestLosNlosAlgorithm();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    private static void TestLosNlosAlgorithm() throws Exception {
+
+        String BuildingPath = "SingleWall.kml";
+        System.out.println("The program begins");
+        BuildingsFactory fact = new BuildingsFactory();
+        List<Building> buildings1 = null;
+
+        buildings1 = fact.generateUTMBuildingListfromKMLfile(BuildingPath);
+        System.out.println("Number of Buildings is " + buildings1.size());
+
+        Point3D tmpPointInUTM = new Point3D(670053, 3551191, 3);
+        Sat tmpSat = new Sat(30, 25, 0);
+        for (int i = 0; i < 72; i++)
+        {
+
+            boolean los = LosAlgorithm.ComputeLos(tmpPointInUTM, buildings1, tmpSat);
+        System.out.println("Azimut:" + tmpSat.getAzimuth() + ". Elev:" + tmpSat.getElevetion() + " status of computation is " + los);
+            tmpSat.setAzimuth(tmpSat.getAzimuth()+1);
+            //tmpSat.setElevetion(tmpSat.getElevetion()+5);
+    }
 
 
     }
 
 
+    public static void SirfParsingML()  {
 
+        String SirfFilePath = "POINT_B_STATIONARY.txt";
+        String outputFile = "POINT_B_STATIONARY_ML";
+        String buildingFilePath = "bursa_mapping_v0.3.kml";
+        System.out.println("The program begins");
+        BuildingsFactory fact = new BuildingsFactory();
 
-    public static void SirfParsingML() {
-
-        String SirfFilePath = "POINT_A_STATIONARY.txt";
-        String outputFile = "POINT_A_STATIONARY_ML";
-
-        SirfProtocolParser parser = new SirfProtocolParser();
+        List<Building> buildings1 = null;
         try {
-            List<SirfPeriodicMeasurement> sirfMeas  = parser.parseFile(SirfFilePath);
-            SirfMLCsvWriter.printToFile(sirfMeas, outputFile);
+            buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath);
+            System.out.println(buildings1.size());
 
-        } catch (IOException e) {
+            SirfProtocolParser parser = new SirfProtocolParser();
+            List<SirfPeriodicMeasurement> sirfMeas  = parser.parseFile(SirfFilePath);
+            for(SirfPeriodicMeasurement tmp : sirfMeas)
+                System.out.println(tmp.getxPos()+ " "+tmp.getyPos()+ " " +tmp.getzPos());
+            parser.ComputeLosNLOS(sirfMeas, buildings1);
+            SirfMLCsvWriter.printToFile(sirfMeas, outputFile);
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
+
 
 
     }
@@ -66,14 +109,13 @@ public class parsingMain {
             Map<Integer, STMSVMeasurement> mappedSvMeasurements = meas.getMappedSvMeasurements();
             for (Integer key : mappedSvMeasurements.keySet()) {
                 STMSVMeasurement stmSvMeasurement = mappedSvMeasurements.get(key);
-                double correctedPR = stmSvMeasurement.getCorrectedPR();
-                // System.out.println(key + "\t " + correctedPR);
+
             }
         }
 
         System.out.println(" number of meas is " + stmMeas.size());
 
-            PseudoRangeComp.computePseudoRangeFromStmMessurment(stmMeas.get(2));
+            PseudoRangeComp.computePseudoRangeFromStmMessurment(stmMeas.get(1));
 
 
 

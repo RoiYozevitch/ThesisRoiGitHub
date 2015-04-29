@@ -2,6 +2,7 @@ package dataStructres;
 
 import GNSS.Sat;
 import Geometry.Point3D;
+import Utils.GeoUtils;
 
 
 import java.io.Serializable;
@@ -32,7 +33,13 @@ public class SirfPeriodicMeasurement implements Serializable{
     int ClockDrift;
     int ClockDriftError;
 
- //   public void SetPosReciverPos()
+    public Boolean getIsLos() {
+        return IsLos;
+    }
+
+    private Boolean IsLos;
+
+    //   public void SetPosReciverPos()
     //  this.ReciverReportedPosition = new Point3D(this.)
 
     public byte getMode1() {
@@ -102,19 +109,20 @@ public class SirfPeriodicMeasurement implements Serializable{
     }
 
     public int getxPos() {
-		return xPos;
+		return xPos;// in ECEF
 	}
 	/**
 	 * @return the yPos
 	 */
 	public int getyPos() {
-		return yPos;
+		return yPos;// in ECEF
 	}
 	/**
 	 * @return the zPos
 	 */
 	public int getzPos() {
-		return zPos;
+		return zPos; // in ECEF
+
 	}
 	/**
 	 * @return the xV
@@ -269,6 +277,20 @@ public class SirfPeriodicMeasurement implements Serializable{
 	}
 
 
+
+    public Point3D GetPosInECEF()
+    {
+        Point3D result = new Point3D(this.getxPos(), this.getyPos(), this.getzPos());
+        return result;
+    }
+
+    public Point3D GetPosInUTM()
+    {
+        Point3D result = new Point3D(this.getxPos(), this.getyPos(), this.getzPos());
+        result = GeoUtils.convertECEFtoLATLON(result); //todo ROi not sure this is optimal
+        result = GeoUtils.convertLATLONtoUTM(result);
+        return result;
+    }
     public void computePseudoRangeLeastSquare()
     {
 
@@ -507,5 +529,27 @@ public class SirfPeriodicMeasurement implements Serializable{
         double residual = dist - sirfSVMeasurement.getPseudorange();
         return residual;
 
+    }
+
+    public List<Sat> getSatList() {
+
+        List<Sat> satList = new ArrayList<>();
+       for(Integer PRN : this.getSatellites().keySet())
+       {
+            SirfSVMeasurement satInstance = this.getSatellites().get(PRN);
+           double az = satInstance.getAzimuth();
+           double el =satInstance.getElevation();
+           Point3D satPosECEF = satInstance.getSatPosInEcef();
+           Sat newSat = new Sat(satPosECEF, az, el, PRN);
+           satList.add(newSat);
+       }
+
+        return satList;
+
+    }
+
+    public void setLosValue(Boolean isLos) {
+
+        this.IsLos = isLos;
     }
 }
