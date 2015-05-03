@@ -51,7 +51,7 @@ public class Wall {
         has2DIntersectionCount++;
         double zOfRay = interpolate(line, point2D);
         double zOfWall = interpolate(getWallAsLine(), point2D);
-        System.out.println("rayZ " + zOfRay + "\twallZ " + zOfWall + "\twallMaxHeight " + getMaxHeight());
+       // System.out.println("rayZ " + zOfRay + "\twallZ " + zOfWall + "\twallMaxHeight " + getMaxHeight());
         if (zOfRay > zOfWall){
             return null;
         }

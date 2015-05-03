@@ -5,11 +5,13 @@ import Geometry.Point3D;
 
 import java.util.Arrays;
 
+
 public class SirfSVMeasurement {
 	
 	double xPos;
 	double yPos;
 	double zPos;
+    public static  double c= 299792458; // m/s
 
 
 
@@ -23,6 +25,37 @@ public class SirfSVMeasurement {
 	double clockBias;
     public double LOSLiklihood;
     private double pseudoRangeWithDeltaT;
+    private Double prevoiusCorrectedPseudoRangeNoVelocityShift=null;
+
+    public Double getPrevoiusDeltaCorrectedPrNoVelocityShift() {
+        return prevoiusDeltaCorrectedPrNoVelocityShift;
+    }
+
+    private Double prevoiusDeltaCorrectedPrNoVelocityShift;
+
+    public void setPrevoiusMaxCn02seconds(Integer prevoiusMaxCn02seconds) {
+        PrevoiusMaxCn02seconds = prevoiusMaxCn02seconds;
+    }
+
+    private Integer PrevoiusMaxCn02seconds=null;
+
+    public double getDeltaCorrectedPrNovelocityShift() {
+        return deltaCorrectedPrNovelocityShift;
+    }
+
+    private double deltaCorrectedPrNovelocityShift;
+
+
+    public double getCorrectPseudoRangeNoVelocitySHift() {
+        return correctPseudoRangeNoVelocitySHift;
+    }
+
+    public void setCorrectPseudoRangeNoVelocitySHift(double correctPseudoRangeNoVelocitySHift) {
+        this.correctPseudoRangeNoVelocitySHift = correctPseudoRangeNoVelocitySHift;
+    }
+
+    private double correctPseudoRangeNoVelocitySHift;
+
 
     public boolean isOKSVM() {
         return OKSVM;
@@ -494,6 +527,49 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
         Sat newSat = new Sat(satPosECEF, az, el, PRN);
         return newSat;
 
+
+    }
+
+    public void ComputedPSrangeNoVelocityShift(double clockDriftMsg7) {
+
+       this.setCorrectPseudoRangeNoVelocitySHift(this.pseudorange+ c*(this.getClockBias()-clockDriftMsg7));
+    }
+
+    public void  setPrevoiusCorrectedPseudoRangeNoVelocityShift(double prevoiusCorrectedPseudoRangeNoVelocityShift) {
+        this.prevoiusCorrectedPseudoRangeNoVelocityShift = prevoiusCorrectedPseudoRangeNoVelocityShift;
+        this.deltaCorrectedPrNovelocityShift = this.correctPseudoRangeNoVelocitySHift - prevoiusCorrectedPseudoRangeNoVelocityShift;
+
+    }
+
+
+    public void setPrevoiusDeltaCorrectedPrNoVelocityShift(Double prevoiusDeltaCorrectedPrNoVelocityShift) {
+        this.prevoiusDeltaCorrectedPrNoVelocityShift = prevoiusDeltaCorrectedPrNoVelocityShift;
+
+    }
+
+    public double getPrevoiusCorrectedPseudoRangeNoVelocityShift() {
+        assert prevoiusCorrectedPseudoRangeNoVelocityShift!=null;
+        return this.prevoiusCorrectedPseudoRangeNoVelocityShift;
+
+
+    }
+
+    public double getSecondDerivativeDeltaCorrectedPrNoVelocityShift() {
+        return this.deltaCorrectedPrNovelocityShift - this.getPreviousDeltaCorrectedPrNovelocityShift();
+
+    }
+
+    private double getPreviousDeltaCorrectedPrNovelocityShift() {
+        assert this.prevoiusDeltaCorrectedPrNoVelocityShift!=null;
+        return this.prevoiusDeltaCorrectedPrNoVelocityShift;
+
+    }
+
+
+
+    public Integer getPreivousMaxCno2seconds() {
+        assert this.PrevoiusMaxCn02seconds!=null;
+        return this.PrevoiusMaxCn02seconds;
 
     }
 }

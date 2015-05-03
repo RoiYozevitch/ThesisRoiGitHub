@@ -16,21 +16,21 @@ public class SirfPeriodicMeasurement implements Serializable{
 	
 	private static final long serialVersionUID = 8214629324823516578L;
     Point3D ReciverReportedPosition;
-	int xPos;
-    int yPos;
-    int zPos;
-    int speed;
-    int course;
+	double xPos;
+    double yPos;
+    double zPos;
+    double speed;
+    double course;
     int horizontalPosError;
-    int GPSWeek;
+    double GPSWeek;
     int verticalPosError;
     int clockError;
     int HorizontalVelocityError;
-    int ClockBias;
+    double ClockBias;
     int SvNum;
     double GPSTOW;
-    int ClockBiasError;
-    int ClockDrift;
+    double ClockBiasError;
+    double ClockDrift;
     int ClockDriftError;
 
     public Boolean getIsLos() {
@@ -78,7 +78,7 @@ public class SirfPeriodicMeasurement implements Serializable{
 	/**
 	 * @return the xPos
 	 */
-    public int getxExGPSWeek()
+    public double getxExGPSWeek()
     {
        return GPSWeek;
     }
@@ -108,19 +108,19 @@ public class SirfPeriodicMeasurement implements Serializable{
         return EstimateGPSTime;
     }
 
-    public int getxPos() {
+    public double getxPos() {
 		return xPos;// in ECEF
 	}
 	/**
 	 * @return the yPos
 	 */
-	public int getyPos() {
+	public double getyPos() {
 		return yPos;// in ECEF
 	}
 	/**
 	 * @return the zPos
 	 */
-	public int getzPos() {
+	public double getzPos() {
 		return zPos; // in ECEF
 
 	}
@@ -145,13 +145,13 @@ public class SirfPeriodicMeasurement implements Serializable{
 	/**
 	 * @return the speed
 	 */
-	public int getSpeed() {
+	public double getSpeed() {
 		return speed;
 	}
 	/**
 	 * @return the course
 	 */
-	public int getCourse() {
+	public double getCourse() {
 		return course;
 	}
 	/**
@@ -181,19 +181,19 @@ public class SirfPeriodicMeasurement implements Serializable{
 	/**
 	 * @return the clockBias
 	 */
-	public int getClockBias() {
+	public double getClockBias() {
 		return ClockBias;
 	}
 	/**
 	 * @return the clockBiasError
 	 */
-	public int getClockBiasError() {
+	public double getClockBiasError() {
 		return ClockBiasError;
 	}
 	/**
 	 * @return the clockDrift
 	 */
-	public int getClockDrift() {
+	public double getClockDrift() {
 		return ClockDrift;
 	}
 	/**
@@ -244,10 +244,10 @@ public class SirfPeriodicMeasurement implements Serializable{
 	public Map<Integer, SirfSVMeasurement>  getSatellites() {
 		return satellites;
 	}
-	public SirfPeriodicMeasurement(int xPos, int yPos, int zPos, int xV, int yV,
-			int zV, int speed, int course, int horizontalPosError,
+	public SirfPeriodicMeasurement(double xPos, double yPos, double zPos, double xV, double yV,
+			double zV, double speed, double course, int horizontalPosError,
 			int verticalPosError, int clockError, int horizontalVelocityError, int GPSWeek,
-			int clockBias, int clockBiasError, int clockDrift,
+			double clockBias, double clockBiasError, double clockDrift,
 			int clockDriftError, double hdop, double lat, double lon,
 			double altEllipsoid, double altMSL, long time,
 			Map<Integer, SirfSVMeasurement> satellites) {
@@ -551,5 +551,72 @@ public class SirfPeriodicMeasurement implements Serializable{
     public void setLosValue(Boolean isLos) {
 
         this.IsLos = isLos;
+    }
+
+    public void computeCorrectPseudoRangeForAllSats() {
+
+        for(Integer PRN : this.getSatellites().keySet())
+        {
+            this.getSatellites().get(PRN).ComputedPSrangeNoVelocityShift(this.getClockBias7()/1000000000);
+        }
+
+    }
+
+    public void printStatus() {
+
+        Point3D earthPosECEF  = this.getECEFPOS();
+        {
+
+            for(Integer PRN : this.getSatellites().keySet())
+            {
+               double ComputedRange = earthPosECEF.distance(this.getSatellites().get(PRN).getSatPosInEcef());
+                double initialError =  this.getSatellites().get(PRN).getPseudorange() - ComputedRange;
+                double errorAfterCorrection = this.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift() - ComputedRange;
+                if(this.getSatellites().get(PRN).getMinCn0()>0)
+               // if(Math.abs(errorAfterCorrection)<20)
+                System.out.println("PRN:"+PRN+". Initila Error : "+initialError+". After Correction: "+errorAfterCorrection+". SNR: " + this.getSatellites().get(PRN).getMaxCn0());
+            }
+
+        }
+
+
+
+
+    }
+
+    private Point3D getECEFPOS() {
+        Point3D selfPosECEF = new Point3D(this.getxPos(), this.getyPos(), this.getzPos());
+        return selfPosECEF;
+    }
+
+
+    public void computePreviousValues(SirfPeriodicMeasurement LastMeaasure, SirfPeriodicMeasurement LastLastMessuare) {
+
+        int LastMaxCno=0;
+        int LastLastMaxCno=0;
+        double PrevoiusCorrectedPs;
+        Double PrevoiusDelta;
+        for(Integer PRN: this.getSatellites().keySet())
+        {
+
+            LastLastMaxCno = LastLastMessuare.getSatellites().get(PRN).getMaxCn0();
+            LastMaxCno = LastMeaasure.getSatellites().get(PRN).getMaxCn0();
+            if(LastLastMaxCno>LastMaxCno)
+                this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(LastLastMaxCno);
+            else
+                this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(LastMaxCno);
+
+
+            PrevoiusCorrectedPs = LastMeaasure.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift();
+            this.getSatellites().get(PRN).setPrevoiusCorrectedPseudoRangeNoVelocityShift(PrevoiusCorrectedPs);
+
+           /* PrevoiusDelta = LastMeaasure.getSatellites().get(PRN).getPrevoiusDeltaCorrectedPrNoVelocityShift();
+            if(PrevoiusDelta!=null)
+            this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(PrevoiusDelta);
+            else
+            */
+                this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(0d);
+
+        }
     }
 }

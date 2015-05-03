@@ -26,14 +26,14 @@ public class parsingMain {
 
     public static void main(String[] args) throws IOException, ParseException {
 
-      //  SirfParsingML();
+       SirfParsingML();
         //PseudoRangeCompute();
-        try {
+    /*    try {
             TestLosNlosAlgorithm();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+*/
 
     }
 
@@ -65,7 +65,7 @@ public class parsingMain {
     public static void SirfParsingML()  {
 
         String SirfFilePath = "POINT_B_STATIONARY.txt";
-        String outputFile = "POINT_B_STATIONARY_ML";
+        String outputFile = "POINT_B_STATIONARY_ML_New";
         String buildingFilePath = "bursa_mapping_v0.3.kml";
         System.out.println("The program begins");
         BuildingsFactory fact = new BuildingsFactory();
@@ -77,8 +77,16 @@ public class parsingMain {
 
             SirfProtocolParser parser = new SirfProtocolParser();
             List<SirfPeriodicMeasurement> sirfMeas  = parser.parseFile(SirfFilePath);
-            for(SirfPeriodicMeasurement tmp : sirfMeas)
-                System.out.println(tmp.getxPos()+ " "+tmp.getyPos()+ " " +tmp.getzPos());
+
+            sirfMeas.get(15).computeCorrectPseudoRangeForAllSats();
+            sirfMeas.get(14).computeCorrectPseudoRangeForAllSats();
+           for(int i=16; i<sirfMeas.size(); i++)
+           {
+               sirfMeas.get(i).computeCorrectPseudoRangeForAllSats();
+               sirfMeas.get(i).computePreviousValues(sirfMeas.get(i-1), sirfMeas.get(i-2));
+
+           }
+
             parser.ComputeLosNLOS(sirfMeas, buildings1);
             SirfMLCsvWriter.printToFile(sirfMeas, outputFile);
         } catch (Exception e) {
