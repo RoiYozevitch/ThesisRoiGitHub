@@ -11,6 +11,7 @@ import Parsing.sirf.SirfMLCsvWriter;
 import Parsing.sirf.SirfProtocolParser;
 import Parsing.stm.STMProtocolParser;
 import Parsing.stm.STMcsvWriter;
+import Utils.KMLgenerator;
 import dataStructres.*;
 import Parsing.nmea.NMEAProtocolParser;
 
@@ -24,9 +25,10 @@ import java.util.Map;
  */
 public class parsingMain {
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws Exception {
 
        SirfParsingML();
+      //  TestLosNlosAlgorithm();
         //PseudoRangeCompute();
     /*    try {
             TestLosNlosAlgorithm();
@@ -39,7 +41,7 @@ public class parsingMain {
 
     private static void TestLosNlosAlgorithm() throws Exception {
 
-        String BuildingPath = "SingleWall.kml";
+        String BuildingPath = "SingleWall2.kml";
         System.out.println("The program begins");
         BuildingsFactory fact = new BuildingsFactory();
         List<Building> buildings1 = null;
@@ -47,16 +49,18 @@ public class parsingMain {
         buildings1 = fact.generateUTMBuildingListfromKMLfile(BuildingPath);
         System.out.println("Number of Buildings is " + buildings1.size());
 
-        Point3D tmpPointInUTM = new Point3D(670053, 3551191, 3);
-        Sat tmpSat = new Sat(30, 25, 0);
-        for (int i = 0; i < 72; i++)
-        {
+        Point3D tmpPointInUTM =  new Point3D(670123.4, 3551171.47, 4);
+        Sat tmpSat = new Sat(248, 79, 1);
+        String KmlFilePath ="test.kml";
+        SirfSVMeasurement sirfMeas= new SirfSVMeasurement();
+
+        KMLgenerator.generateSatLinesFromSat(tmpSat, tmpPointInUTM, KmlFilePath);
 
             boolean los = LosAlgorithm.ComputeLos(tmpPointInUTM, buildings1, tmpSat);
-        System.out.println("Azimut:" + tmpSat.getAzimuth() + ". Elev:" + tmpSat.getElevetion() + " status of computation is " + los);
-            tmpSat.setAzimuth(tmpSat.getAzimuth()+1);
+            System.out.println("Azimut:" + tmpSat.getAzimuth() + ". Elev:" + tmpSat.getElevetion() + " status of computation is " + los);
+
             //tmpSat.setElevetion(tmpSat.getElevetion()+5);
-    }
+
 
 
     }
@@ -64,31 +68,54 @@ public class parsingMain {
 
     public static void SirfParsingML()  {
 
-        String SirfFilePath = "POINT_B_STATIONARY.txt";
-        String outputFile = "POINT_B_STATIONARY_ML_New";
-        String buildingFilePath = "bursa_mapping_v0.3.kml";
+        String[] SirfFilePath={"POINT_A_STATIONARY.txt","POINT_B_STATIONARY.txt","POINT_C_STATIONARY.txt","POINT_D_STATIONARY.txt"};
+
+       /* String SirfFilePathA = ;
+        String SirfFilePathC = "POINT_C_STATIONARY.txt";
+        String SirfFilePathD = "POINT_D_STATIONARY.txt";
+        String SirfFileRouteABCD  = "route_abcd_twice.txt";
+*/
+
+
+        String[] OutputFile ={"PointA_new2","PointB_new2","PointC_new2","PointD_New2"};
+
+        String outputFileRouteSirf = "route_abcd_twice_ML_ClassificationWrong.txt";
+
+        String buildingFilePath = "EsriBuildingsBursaNoindentWithBoazBuilding.kml";
         System.out.println("The program begins");
+
+        Point3D[] receiverPosition = new Point3D[4];
+        receiverPosition[0] = new Point3D(670114.15, 3551135.3, 1.8); //according to Boaz file bursa-a-d.kml point a
+        receiverPosition[1] = new Point3D(670126.5, 3551136.25, 1.8); //according to Boaz file bursa-a-d.kml point b
+        receiverPosition[2] = new Point3D(670123.4, 3551171.47, 1.8); //according to Boaz file bursa-a-d.kml point c
+        receiverPosition[3] =  new Point3D(670111.6, 3551170.62, 1.8); //according to Boaz file bursa-a-d.km point d
+
         BuildingsFactory fact = new BuildingsFactory();
 
         List<Building> buildings1 = null;
         try {
             buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath);
             System.out.println(buildings1.size());
-
+            String KmlFilePath = "pointC.kml";
             SirfProtocolParser parser = new SirfProtocolParser();
-            List<SirfPeriodicMeasurement> sirfMeas  = parser.parseFile(SirfFilePath);
+            for(int cnt=0; cnt<4; cnt++) {
+                List<SirfPeriodicMeasurement> sirfMeas = parser.parseFile(SirfFilePath[cnt]);
+              //  KMLgenerator.generateSatLinesFromSirfSvMesserment(sirfMeas, receiverPosition[2], KmlFilePath);
 
-            sirfMeas.get(15).computeCorrectPseudoRangeForAllSats();
-            sirfMeas.get(14).computeCorrectPseudoRangeForAllSats();
-           for(int i=16; i<sirfMeas.size(); i++)
-           {
-               sirfMeas.get(i).computeCorrectPseudoRangeForAllSats();
-               sirfMeas.get(i).computePreviousValues(sirfMeas.get(i-1), sirfMeas.get(i-2));
 
-           }
+                sirfMeas.get(0).computeCorrectPseudoRangeForAllSats();
+                sirfMeas.get(1).computeCorrectPseudoRangeForAllSats();
+                sirfMeas.get(1).setExtremeSnrValuesForAllSats();
+                for (int i = 2; i < sirfMeas.size(); i++) {
+                    sirfMeas.get(i).computeCorrectPseudoRangeForAllSats();
+                    sirfMeas.get(i).computePseudoRangeResidualsForAllSats();
+                    sirfMeas.get(i).computePreviousValues(sirfMeas.get(i - 1), sirfMeas.get(i - 2));
 
-            parser.ComputeLosNLOS(sirfMeas, buildings1);
-            SirfMLCsvWriter.printToFile(sirfMeas, outputFile);
+                }
+                parser.ComputeLosNLOSFromStaticPoint(sirfMeas, buildings1, receiverPosition[cnt]);
+
+                SirfMLCsvWriter.printToFileSpecificValues(sirfMeas, OutputFile[cnt]);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

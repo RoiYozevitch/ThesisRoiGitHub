@@ -555,9 +555,21 @@ public class SirfPeriodicMeasurement implements Serializable{
 
     public void computeCorrectPseudoRangeForAllSats() {
 
+
         for(Integer PRN : this.getSatellites().keySet())
         {
             this.getSatellites().get(PRN).ComputedPSrangeNoVelocityShift(this.getClockBias7()/1000000000);
+        }
+
+    }
+
+    public void computePseudoRangeResidualsForAllSats()
+    {
+        Point3D receiverPosECEF = this.getECEFPOS();
+
+        for(Integer PRN : this.getSatellites().keySet())
+        {
+            this.getSatellites().get(PRN).computePsResiduals(receiverPosECEF);
         }
 
     }
@@ -592,31 +604,70 @@ public class SirfPeriodicMeasurement implements Serializable{
 
     public void computePreviousValues(SirfPeriodicMeasurement LastMeaasure, SirfPeriodicMeasurement LastLastMessuare) {
 
+
+        //This function add the last saample SNR, Carrier Phase.
         int LastMaxCno=0;
         int LastLastMaxCno=0;
         double PrevoiusCorrectedPs;
         Double PrevoiusDelta;
+        int MaxSnrInSatHistory=20;
+        int MinSnrInSatHistory=20;
+
         for(Integer PRN: this.getSatellites().keySet())
         {
 
-            LastLastMaxCno = LastLastMessuare.getSatellites().get(PRN).getMaxCn0();
-            LastMaxCno = LastMeaasure.getSatellites().get(PRN).getMaxCn0();
-            if(LastLastMaxCno>LastMaxCno)
-                this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(LastLastMaxCno);
+           if(LastLastMessuare.getSatellites().get(PRN)!=null && LastMeaasure.getSatellites().get(PRN)!=null)
+           {
+
+               MaxSnrInSatHistory = LastMeaasure.getSatellites().get(PRN).getMaxCn0InSatHistory();
+               MinSnrInSatHistory = LastMeaasure.getSatellites().get(PRN).getMinCn0InSatHistory();
+
+               this.getSatellites().get(PRN).setExtremeSNRValues(MaxSnrInSatHistory, MinSnrInSatHistory);
+
+               LastLastMaxCno = LastLastMessuare.getSatellites().get(PRN).getMaxCn0();
+               LastMaxCno = LastMeaasure.getSatellites().get(PRN).getMaxCn0();
+
+                if (LastLastMaxCno > LastMaxCno)
+                    this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(LastLastMaxCno);
+                else
+                    this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(LastMaxCno);
+
+
+                PrevoiusCorrectedPs = LastMeaasure.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift();
+               PrevoiusDelta = PrevoiusCorrectedPs - LastLastMessuare.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift();
+                this.getSatellites().get(PRN).setPrevoiusCorrectedPseudoRangeNoVelocityShift(PrevoiusCorrectedPs);
+               this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(PrevoiusDelta);
+               this.getSatellites().get(PRN).setPreviousCarrierPhase(LastMeaasure.getSatellites().get(PRN).getCarrierPhase());
+               this.getSatellites().get(PRN).setDeltaIonosphericDelay(this.getSatellites().get(PRN).getIonosphericDelay()- LastMeaasure.getSatellites().get(PRN).getIonosphericDelay());
+               this.getSatellites().get(PRN).setCarrierFreqDelta(  this.getSatellites().get(PRN).getCarrierFreq()-LastMeaasure.getSatellites().get(PRN).getCarrierFreq());
+            }
             else
-                this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(LastMaxCno);
+           {
+               this.getSatellites().get(PRN).setPrevoiusMaxCn02seconds(0);
+               this.getSatellites().get(PRN).setPrevoiusCorrectedPseudoRangeNoVelocityShift(0d);
+               this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(0d);
+               this.getSatellites().get(PRN).setExtremeValuesToCurrentValues();
+               this.getSatellites().get(PRN).setPreviousCarrierPhase(this.getSatellites().get(PRN).getCarrierPhase());
+               this.getSatellites().get(PRN).setDeltaIonosphericDelay(0d);
+               this.getSatellites().get(PRN).setCarrierFreqDelta(0d);
+           }
 
-
-            PrevoiusCorrectedPs = LastMeaasure.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift();
-            this.getSatellites().get(PRN).setPrevoiusCorrectedPseudoRangeNoVelocityShift(PrevoiusCorrectedPs);
 
            /* PrevoiusDelta = LastMeaasure.getSatellites().get(PRN).getPrevoiusDeltaCorrectedPrNoVelocityShift();
             if(PrevoiusDelta!=null)
             this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(PrevoiusDelta);
             else
             */
-                this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(0d);
 
+
+        }
+    }
+
+    public void setExtremeSnrValuesForAllSats() {
+
+        for(Integer PRN : this.getSatellites().keySet())
+        {
+            this.getSatellites().get(PRN).setExtremeValuesToCurrentValues();
         }
     }
 }

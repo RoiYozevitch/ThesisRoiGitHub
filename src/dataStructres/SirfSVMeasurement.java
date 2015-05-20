@@ -15,7 +15,15 @@ public class SirfSVMeasurement {
 
 
 
-
+    boolean OKSVM;
+    double carrierPhase;
+    double carrierFreq;
+    double pseudorange;
+    double DeltapseudoRange;
+    double gpsSoftwareTime;
+    int[] filteredCNo;
+    int[] CNo;
+    private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 seconds.
     double ComputedPSrange;
 	double xV, yV, zV, clockDrift, ionosphericDelay,
 		deltaRangeInterval, 
@@ -25,26 +33,89 @@ public class SirfSVMeasurement {
 	double clockBias;
     public double LOSLiklihood;
     private double pseudoRangeWithDeltaT;
+    private double previousCarrierPhase;
     private Double prevoiusCorrectedPseudoRangeNoVelocityShift=null;
+    private double PsResiduals;
+    public int MaxCn0InSatHistory;
+    public int MinCn0InSatHistory;
+    private Double prevoiusDeltaCorrectedPrNoVelocityShift;
+    private Integer PrevoiusMaxCn02seconds=null;
+    private double deltaCorrectedPrNovelocityShift;
+
+    public void setCarrierFreqDelta(double carrierFreqDelta) {
+        this.carrierFreqDelta = carrierFreqDelta;
+    }
+
+    private double carrierFreqDelta;
+
+    public void setDeltaIonosphericDelay(double deltaIonosphericDelay) {
+        this.deltaIonosphericDelay = deltaIonosphericDelay;
+    }
+
+    private double deltaIonosphericDelay;
+
+    public double getPreviousCarrierPhase() {
+        return previousCarrierPhase;
+    }
+
+    public void setPreviousCarrierPhase(double previousCarrierPhase) {
+        this.previousCarrierPhase = previousCarrierPhase;
+    }
+
+
+    public int getMaxCn0InSatHistory() {
+        return MaxCn0InSatHistory;
+    }
+
+    public void setMaxCn0InSatHistory(int maxCn0InSatHistory) {
+        MaxCn0InSatHistory = maxCn0InSatHistory;
+    }
+
+    public int getMinCn0InSatHistory() {
+        return MinCn0InSatHistory;
+    }
+
+    public void setExtremeSNRValues(int MaxCn0inSatHistory, int MinCn0InSatHistory)
+    {
+        int maxCn0 = this.getMaxCn0();
+        int MinCn0 = this.getMinCn0();
+        if(MaxCn0inSatHistory>maxCn0)
+            this.setMaxCn0InSatHistory(MaxCn0inSatHistory);
+        else
+            this.setMaxCn0InSatHistory(maxCn0);
+        if(MinCn0InSatHistory<MinCn0)
+            this.setMinCn0InSatHistory(MinCn0InSatHistory);
+        else
+            this.setMinCn0InSatHistory(MinCn0);
+
+    }
+
+    public void setMinCn0InSatHistory(int minCn0InSatHistory) {
+        MinCn0InSatHistory = minCn0InSatHistory;
+    }
+
+
+    public double getCorrectPsResiduals() {
+        return PsResiduals;
+    }
+
+    public void setExtremeValuesToCurrentValues()
+    {
+        this.setMinCn0InSatHistory(this.getMinCn0());
+        this.setMaxCn0InSatHistory(this.getMaxCn0());
+    }
 
     public Double getPrevoiusDeltaCorrectedPrNoVelocityShift() {
         return prevoiusDeltaCorrectedPrNoVelocityShift;
     }
 
-    private Double prevoiusDeltaCorrectedPrNoVelocityShift;
 
-    public void setPrevoiusMaxCn02seconds(Integer prevoiusMaxCn02seconds) {
-        PrevoiusMaxCn02seconds = prevoiusMaxCn02seconds;
-    }
 
-    private Integer PrevoiusMaxCn02seconds=null;
+    public void setPrevoiusMaxCn02seconds(Integer prevoiusMaxCn02seconds) {PrevoiusMaxCn02seconds = prevoiusMaxCn02seconds;}
 
     public double getDeltaCorrectedPrNovelocityShift() {
         return deltaCorrectedPrNovelocityShift;
     }
-
-    private double deltaCorrectedPrNovelocityShift;
-
 
     public double getCorrectPseudoRangeNoVelocitySHift() {
         return correctPseudoRangeNoVelocitySHift;
@@ -65,15 +136,6 @@ public class SirfSVMeasurement {
         this.OKSVM = OKSVM;
     }
 
-    boolean OKSVM;
-	double carrierPhase;
-	double carrierFreq;
-	double pseudorange;
-    double DeltapseudoRange;
-	double gpsSoftwareTime;
-	int[] filteredCNo;
-	int[] CNo;
-private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 seconds.
 
   /*
     Getters and Setters:
@@ -547,20 +609,21 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
 
     }
 
-    public double getPrevoiusCorrectedPseudoRangeNoVelocityShift() {
-        assert prevoiusCorrectedPseudoRangeNoVelocityShift!=null;
+    public Double getPrevoiusCorrectedPseudoRangeNoVelocityShift() {
+//        assert prevoiusCorrectedPseudoRangeNoVelocityShift!=null;
         return this.prevoiusCorrectedPseudoRangeNoVelocityShift;
 
 
     }
 
     public double getSecondDerivativeDeltaCorrectedPrNoVelocityShift() {
+        //return 0;
         return this.deltaCorrectedPrNovelocityShift - this.getPreviousDeltaCorrectedPrNovelocityShift();
 
     }
 
-    private double getPreviousDeltaCorrectedPrNovelocityShift() {
-        assert this.prevoiusDeltaCorrectedPrNoVelocityShift!=null;
+    private Double getPreviousDeltaCorrectedPrNovelocityShift() {
+     //   assert this.prevoiusDeltaCorrectedPrNoVelocityShift!=null;
         return this.prevoiusDeltaCorrectedPrNoVelocityShift;
 
     }
@@ -571,5 +634,25 @@ private    int[] OldCNo; //  Highest and lowest  Cn0 values of the previous 5 se
         assert this.PrevoiusMaxCn02seconds!=null;
         return this.PrevoiusMaxCn02seconds;
 
+    }
+
+    public void computePsResiduals(Point3D receiverPosECEF) {
+
+        double ComputeddistanceSatReceiver = receiverPosECEF.distance(this.getSatPosInEcef());
+        this.PsResiduals = this.correctPseudoRangeNoVelocitySHift - ComputeddistanceSatReceiver;
+    }
+
+    public double getDeltaIonosphericDelay() {
+        return deltaIonosphericDelay;
+    }
+
+    public double getCarrierFreqDelta() {
+        return carrierFreqDelta;
+    }
+
+    public int ifCarrierPhaseLock() {
+        int isCarrierMask = 2; //0b00000010
+        int ans = isCarrierMask & this.getState();
+        return ans;
     }
 }

@@ -60,9 +60,10 @@ public class Wall {
     }
 
     private double interpolate(Line3D line, Point2D point2D) {
-        double length = line.length();
+        double length = line.getP1().distance2D(line.getP2());
         double percentageInXYFromLineP1 = line.getP1().distance(point2D) / length;
-        return line.getP1().getZ() + (percentageInXYFromLineP1 * (line.getP2().getZ() - line.getP1().getZ()));
+        double ans = line.getP1().getZ() + (percentageInXYFromLineP1 * (line.getP2().getZ() - line.getP1().getZ()));
+        return ans;
     }
 
 
