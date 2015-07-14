@@ -384,6 +384,18 @@ public class SirfProtocolParser {
 		return null;
 	}
 
+
+    public void ComputeLosNlosForSingleTimeStamp(SirfPeriodicMeasurement meas, List<Building> buildings1, Point3D receiverPointInUTM)
+    {
+        Sat sat =null;
+        for (Integer Prn : meas.getSatellites().keySet()) {
+            sat = meas.getSatellites().get(Prn).getSatClass(Prn);
+            Boolean isLos = LosAlgorithm.ComputeLos(receiverPointInUTM, buildings1, sat);
+            meas.getSatellites().get(Prn).setLOS(isLos);
+
+        }
+    }
+
     public void ComputeLosNLOSFromStaticPoint(List<SirfPeriodicMeasurement> sirfMeas, List<Building> buildings1, Point3D receiverPointInUTM) {
 
         Sat sat =null;

@@ -25,6 +25,24 @@ public class Point2D {
         return ans;
     }
 
+    public double angle2D(Point2D secondPoint)
+    {
+        if((secondPoint.getX() > this.x)) {//above 0 to 180 degrees
+
+            return (Math.atan2((secondPoint.getX() - this.x), (this.y - secondPoint.getY())) * 180 / Math.PI);
+
+        }
+        else if((secondPoint.getX() < this.x)) {//above 180 degrees to 360/0
+
+            return 360 - (Math.atan2((this.x - secondPoint.getX()), (this.y - secondPoint.getY())) * 180 / Math.PI);
+
+        }//End if((secondPoint.x > firstPoint.x) && (secondPoint.y <= firstPoint.y))
+
+        return Math.atan2(0 ,0);
+
+    }//End public float getAngleFromPoint(Point firstPoint, Point secondPoint)
+
+
     @Override
     public String toString() {
         return "Point2D{" +

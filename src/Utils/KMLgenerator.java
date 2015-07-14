@@ -229,12 +229,12 @@ public class KMLgenerator {
             out.write(" </TimeStamp>\n");
             out.write("<Point>\n<altitudeMode>relativeToGround</altitudeMode>\n<coordinates>");
             tmp=PointList.get(i);
-            tmp = GeoUtils.convertAnyCordToLATLON(PointList.get(i));
+            tmp = GeoUtils.convertUTMtoLATLON(PointList.get(i), 36);
             lat=tmp.getX();
             lon=tmp.getY();
             double alt = tmp.getZ();
-            line=Double.toString(lon)+" "+Double.toString(lat)+" "+Double.toString(alt);
-
+            line=Double.toString(lon)+","+Double.toString(lat)+","+Double.toString(alt);
+            out.write(line);
             out.write("</coordinates>\n");
             out.write("</Point>\n</Placemark>");
 

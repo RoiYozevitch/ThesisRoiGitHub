@@ -17,6 +17,7 @@ import Parsing.nmea.NMEAProtocolParser;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +28,8 @@ public class parsingMain {
 
     public static void main(String[] args) throws Exception {
 
+     // MovingRecording();
+      //  SirfParseForGpsSwitch();
        SirfParsingML();
       //  TestLosNlosAlgorithm();
         //PseudoRangeCompute();
@@ -36,6 +39,108 @@ public class parsingMain {
             e.printStackTrace();
         }
 */
+
+    }
+
+
+    private static void SirfParseForGpsSwitch()
+    {
+
+        SirfProtocolParser parser = new SirfProtocolParser();
+        String SirfFilePath = "GPSSwitch3AntennaBuilding5.gps";
+        String OutputFile  = "ParsedExpriment9_6_2015";
+        try {
+            List<SirfPeriodicMeasurement> sirfMeas = parser.parseFile(SirfFilePath);
+            System.out.println(sirfMeas.size());
+            SirfMLCsvWriter.printToFile4GpsSwitchProject(sirfMeas, OutputFile);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void MovingRecording() {
+
+        SirfProtocolParser parser = new SirfProtocolParser();
+        List<Integer> Stamps=computeIndex();
+        Point3D[] receiverPosition = new Point3D[4];
+        receiverPosition[0] = new Point3D(670114.15, 3551135.3, 1.8); //according to Boaz file bursa-a-d.kml point a
+        receiverPosition[1] = new Point3D(670126.5, 3551136.25, 1.8); //according to Boaz file bursa-a-d.kml point b
+        receiverPosition[2] = new Point3D(670123.4, 3551171.47, 1.8); //according to Boaz file bursa-a-d.kml point c
+        receiverPosition[3] =  new Point3D(670111.6, 3551170.62, 1.8); //according to Boaz file bursa-a-d.km point d
+        String routePath = "routeABCDFabricated.kml";
+        Integer[] Times={0,11,16,50,50,58,59,94,94,106,106,142,142,151,151,186};
+        Integer[] timeSum={11, 34, 8, 35, 12, 36,11, 37};
+        BuildingsFactory fact = new BuildingsFactory();
+        String buildingFilePath = "EsriBuildingsBursaNoindentWithBoazBuilding.kml";
+
+        List<Building> buildings1 = null;
+        try {
+            buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        List<Point3D> route = squarePathReconstruction(receiverPosition, timeSum);
+        String OutputFile = "routeABCD_Parsed";
+        String SirfFilePath = "route_abcd_twice.gps";
+        try {
+            List<SirfPeriodicMeasurement> sirfMeas = parser.parseFile(SirfFilePath);
+            System.out.println("Number of Instncec : "+ sirfMeas.size());
+
+            sirfMeas.get(0).computeCorrectPseudoRangeForAllSats();
+            sirfMeas.get(1).computeCorrectPseudoRangeForAllSats();
+            sirfMeas.get(1).setExtremeSnrValuesForAllSats();
+            for (int i = 2; i < sirfMeas.size(); i++) {
+                sirfMeas.get(i).computeCorrectPseudoRangeForAllSats();
+                sirfMeas.get(i).computePseudoRangeResidualsForAllSats();
+                sirfMeas.get(i).computePreviousValues(sirfMeas.get(i - 1), sirfMeas.get(i - 2));
+
+            }
+            for(int i=0; i<sirfMeas.size();i++)
+                System.out.println(i+ ")"+ sirfMeas.get(i).getCourse());
+            int j=0;
+            System.out.println("ROute is "+ route.size());
+            System.out.println("Stamps is "+ Stamps.size());
+            System.out.println("Meas is "+ sirfMeas.size());
+            int i=0;
+            for( j=0; j< route.size(); j++)
+            {
+
+
+                parser.ComputeLosNlosForSingleTimeStamp(sirfMeas.get(Stamps.get(j)),buildings1, route.get(j));
+            }
+            System.out.println("Start writing file number ");
+            SirfMLCsvWriter.printToFileSpecificValues(sirfMeas, OutputFile, 6);
+            System.out.println("Finshed writing file number ");
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static List<Integer> computeIndex() {
+        Integer[] Times={0,11,16,50,50,58,59,94,94,106,106,142,142,151,151,186};
+        Integer[] timeSum={11, 34, 8, 35, 12, 36,11, 37};
+        int buffer=6;
+        int tmp;
+       List<Integer> Stamps = new ArrayList<>();
+        for(int i=0; i<184; i++)
+        {
+
+                if(i<11)
+                    tmp=i+buffer;
+                else
+                tmp=i+3+buffer;
+                Stamps.add(tmp);
+        }
+        return Stamps;
+
+
 
     }
 
@@ -77,7 +182,9 @@ public class parsingMain {
 */
 
 
-        String[] OutputFile ={"PointA_new2","PointB_new2","PointC_new2","PointD_New2"};
+        String[] OutputFile ={"PointA_FilterNoFirst30Good","PointB_FilterNoFirst30Good","PointC_FilterNoFirst30Good","PointD_FilterNoFirst30Good "};
+       // String[] OutputFile ={"PointA_Filter","PointB_Filter","PointC_Filter","PointD_Filter "};
+
 
         String outputFileRouteSirf = "route_abcd_twice_ML_ClassificationWrong.txt";
 
@@ -113,8 +220,9 @@ public class parsingMain {
 
                 }
                 parser.ComputeLosNLOSFromStaticPoint(sirfMeas, buildings1, receiverPosition[cnt]);
-
-                SirfMLCsvWriter.printToFileSpecificValues(sirfMeas, OutputFile[cnt]);
+                System.out.println("Start writing file number "+ cnt);
+                SirfMLCsvWriter.printToFileSpecificValues(sirfMeas, OutputFile[cnt], 30);
+                System.out.println("Finshed writing file number "+ cnt);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -123,6 +231,44 @@ public class parsingMain {
 
 
 
+    }
+
+    public static List<Point3D> squarePathReconstruction(Point3D[] square, Integer[] timeSum)
+
+    {
+
+        List<Point3D> Points = new ArrayList<>();
+        List<Point3D> tmpList;
+        Integer CurrentLenghtInSec;
+        for(int i=0; i<timeSum.length; i++)
+        {
+            CurrentLenghtInSec = timeSum[i];
+            tmpList = GeneratePointsFromLine(square[i%4], square[(i+1)%4], CurrentLenghtInSec);
+            Points.addAll(tmpList);
+
+        }
+        return Points;
+    }
+
+   public static double calcAngle(Point3D p1,Point3D p2) {
+        return Math.atan2(p2.getY()-p1.getY(),p2.getX()-p1.getX())*180.0/Math.PI;
+    }
+    private static List<Point3D> GeneratePointsFromLine(Point3D p1, Point3D p2, Integer currentLenghtInSec) {
+
+        double dist = p1.distance2D(p2);
+        double angle = p1.angle2D(p2);
+        double angle2=calcAngle(p1,p2);
+        double quants = dist/currentLenghtInSec;
+        List<Point3D> ans= new ArrayList<>();
+        for(int i=0; i<currentLenghtInSec; i++)
+        {
+
+            double dx=i*quants*Math.cos(Math.toRadians(angle2));
+            double dy = i*quants*Math.sin(Math.toRadians(angle2));
+            Point3D tmp = new Point3D(p1.getX()+dx, p1.getY()+dy, p1.getZ());
+            ans.add(tmp);
+        }
+        return ans;
     }
 
     public static void PseudoRangeCompute()
