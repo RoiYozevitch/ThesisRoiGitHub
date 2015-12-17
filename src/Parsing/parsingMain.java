@@ -28,9 +28,10 @@ public class parsingMain {
 
     public static void main(String[] args) throws Exception {
 
-     // MovingRecording();
+        //MovingRecording();
       //  SirfParseForGpsSwitch();
-       SirfParsingML();
+      SirfParsingML();
+       // ParseToCsv();
       //  TestLosNlosAlgorithm();
         //PseudoRangeCompute();
     /*    try {
@@ -73,7 +74,12 @@ public class parsingMain {
         String routePath = "routeABCDFabricated.kml";
         Integer[] Times={0,11,16,50,50,58,59,94,94,106,106,142,142,151,151,186};
         Integer[] timeSum={11, 34, 8, 35, 12, 36,11, 37};
+        Integer[] TimeSum2ndFastSquare = {6,21,8,21,7,21,8,22};
         BuildingsFactory fact = new BuildingsFactory();
+
+
+      //todo ROi - get this file
+      //  String buildingFilePath = "EsriBuildingsBursaNoindentWithBoazBuilding.kml";
         String buildingFilePath = "EsriBuildingsBursaNoindentWithBoazBuilding.kml";
 
         List<Building> buildings1 = null;
@@ -83,12 +89,12 @@ public class parsingMain {
             e.printStackTrace();
         }
 
-        List<Point3D> route = squarePathReconstruction(receiverPosition, timeSum);
-        String OutputFile = "routeABCD_Parsed";
-        String SirfFilePath = "route_abcd_twice.gps";
+        List<Point3D> route = squarePathReconstruction(receiverPosition, TimeSum2ndFastSquare);
+        String OutputFile = "routeABCDtwice12AM_Parsed";
+        String SirfFilePath = "routeABCDtwice12AM.gps";
         try {
             List<SirfPeriodicMeasurement> sirfMeas = parser.parseFile(SirfFilePath);
-            System.out.println("Number of Instncec : "+ sirfMeas.size());
+            System.out.println("Number of Instncec : " + sirfMeas.size());
 
             sirfMeas.get(0).computeCorrectPseudoRangeForAllSats();
             sirfMeas.get(1).computeCorrectPseudoRangeForAllSats();
@@ -99,13 +105,13 @@ public class parsingMain {
                 sirfMeas.get(i).computePreviousValues(sirfMeas.get(i - 1), sirfMeas.get(i - 2));
 
             }
-            for(int i=0; i<sirfMeas.size();i++)
-                System.out.println(i+ ")"+ sirfMeas.get(i).getCourse());
-            int j=0;
+
             System.out.println("ROute is "+ route.size());
-            System.out.println("Stamps is "+ Stamps.size());
+            //System.out.println("Stamps is "+ Stamps.size());
             System.out.println("Meas is "+ sirfMeas.size());
-            int i=0;
+            for(int i=0; i<sirfMeas.size();i++)
+                System.out.println(i+" ) COG "+ sirfMeas.get(i).getCourse()/1000+ ". speed "+ sirfMeas.get(i).getSpeed());
+            int j=0;
             for( j=0; j< route.size(); j++)
             {
 
@@ -170,60 +176,84 @@ public class parsingMain {
 
     }
 
+    public static void ParseToCsv()
+    {
+        String InputFile = "InDoor2.gps";
+        String OutputFile = "Indoor.csv";
+        SirfProtocolParser parser = new SirfProtocolParser();
+        List<SirfPeriodicMeasurement> sirfMeas = null;
+        try {
+            sirfMeas = parser.parseFile(InputFile);
+            SirfCsvWriter.printToFile(sirfMeas, OutputFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     public static void SirfParsingML()  {
 
         String[] SirfFilePath={"POINT_A_STATIONARY.txt","POINT_B_STATIONARY.txt","POINT_C_STATIONARY.txt","POINT_D_STATIONARY.txt"};
-
-       /* String SirfFilePathA = ;
-        String SirfFilePathC = "POINT_C_STATIONARY.txt";
-        String SirfFilePathD = "POINT_D_STATIONARY.txt";
-        String SirfFileRouteABCD  = "route_abcd_twice.txt";
-*/
+        String[] SirfFilePathNewRecord={"pointA_11_AM.gps","pointB_11_AM.gps","pointC_11_AM.gps","pointD_11_AM.gps","POINT_A_Old.gps","POINT_B_Old.gps","POINT_C_Old.gps","POINT_D_Old.gps"};
 
 
-        String[] OutputFile ={"PointA_FilterNoFirst30Good","PointB_FilterNoFirst30Good","PointC_FilterNoFirst30Good","PointD_FilterNoFirst30Good "};
-       // String[] OutputFile ={"PointA_Filter","PointB_Filter","PointC_Filter","PointD_Filter "};
+
+        String[] OutputFile ={"PointA_newRecord","PointB_newRecord","PointC_newRecord","PointD_newRecord "};
+
+       String buildingFilePath = "EsriBuildingsBursaNoindentWithBoazBuilding.kml";
 
 
-        String outputFileRouteSirf = "route_abcd_twice_ML_ClassificationWrong.txt";
-
-        String buildingFilePath = "EsriBuildingsBursaNoindentWithBoazBuilding.kml";
         System.out.println("The program begins");
 
-        Point3D[] receiverPosition = new Point3D[4];
+        Point3D[] receiverPosition = new Point3D[8];
         receiverPosition[0] = new Point3D(670114.15, 3551135.3, 1.8); //according to Boaz file bursa-a-d.kml point a
         receiverPosition[1] = new Point3D(670126.5, 3551136.25, 1.8); //according to Boaz file bursa-a-d.kml point b
         receiverPosition[2] = new Point3D(670123.4, 3551171.47, 1.8); //according to Boaz file bursa-a-d.kml point c
         receiverPosition[3] =  new Point3D(670111.6, 3551170.62, 1.8); //according to Boaz file bursa-a-d.km point d
+        receiverPosition[4] = new Point3D(670114.15, 3551135.3, 1.8); //according to Boaz file bursa-a-d.kml point a
+        receiverPosition[5] = new Point3D(670126.5, 3551136.25, 1.8); //according to Boaz file bursa-a-d.kml point b
+        receiverPosition[6] = new Point3D(670123.4, 3551171.47, 1.8); //according to Boaz file bursa-a-d.kml point c
+        receiverPosition[7] =  new Point3D(670111.6, 3551170.62, 1.8); //according to Boaz file bursa-a-d.km point d
 
         BuildingsFactory fact = new BuildingsFactory();
 
         List<Building> buildings1 = null;
         try {
             buildings1 = fact.generateUTMBuildingListfromKMLfile(buildingFilePath);
-            System.out.println(buildings1.size());
-            String KmlFilePath = "pointC.kml";
+            System.out.println("Number of Buildings is " +buildings1.size());
             SirfProtocolParser parser = new SirfProtocolParser();
-            for(int cnt=0; cnt<4; cnt++) {
-                List<SirfPeriodicMeasurement> sirfMeas = parser.parseFile(SirfFilePath[cnt]);
-              //  KMLgenerator.generateSatLinesFromSirfSvMesserment(sirfMeas, receiverPosition[2], KmlFilePath);
+            List<List<SirfPeriodicMeasurement>> sirfMeas=  new ArrayList<List<SirfPeriodicMeasurement>>(4);
+            for(int cnt=0; cnt<8; cnt++) {
 
+                List<SirfPeriodicMeasurement> tmpParseSirf = parser.parseFile(SirfFilePathNewRecord[cnt]);
+                tmpParseSirf.get(0).computeCorrectPseudoRangeForAllSats();
+                tmpParseSirf.get(1).computeCorrectPseudoRangeForAllSats();
+                tmpParseSirf.get(1).setExtremeSnrValuesForAllSats();
 
-                sirfMeas.get(0).computeCorrectPseudoRangeForAllSats();
-                sirfMeas.get(1).computeCorrectPseudoRangeForAllSats();
-                sirfMeas.get(1).setExtremeSnrValuesForAllSats();
-                for (int i = 2; i < sirfMeas.size(); i++) {
-                    sirfMeas.get(i).computeCorrectPseudoRangeForAllSats();
-                    sirfMeas.get(i).computePseudoRangeResidualsForAllSats();
-                    sirfMeas.get(i).computePreviousValues(sirfMeas.get(i - 1), sirfMeas.get(i - 2));
+                for (int i = 2; i < tmpParseSirf.size(); i++) {
+                    tmpParseSirf.get(i).computeCorrectPseudoRangeForAllSats();
+                    tmpParseSirf.get(i).computePseudoRangeResidualsForAllSats();
+                    tmpParseSirf.get(i).computePreviousValues(tmpParseSirf.get(i - 1), tmpParseSirf.get(i - 2));
 
                 }
-                parser.ComputeLosNLOSFromStaticPoint(sirfMeas, buildings1, receiverPosition[cnt]);
-                System.out.println("Start writing file number "+ cnt);
-                SirfMLCsvWriter.printToFileSpecificValues(sirfMeas, OutputFile[cnt], 30);
-                System.out.println("Finshed writing file number "+ cnt);
+                System.out.println("Computing LOS/NLOS states for file number "+cnt+". It takes time...");
+                parser.ComputeLosNLOSFromStaticPointWithBorderKnowladge(tmpParseSirf, buildings1, receiverPosition[cnt]);
+                sirfMeas.add(cnt, tmpParseSirf);
+
             }
+
+
+              //  int filesToChooes[] = {0,1,2,3,4,5,6};
+                int filetochoose2[] = {0,1,2,3,4,5,6,7};
+                String Output1 = "PointsABCD_new";
+            String Output2 = "PointsABCDABCD";
+
+                //SirfMLCsvWriter.printEverythingToSingleFile(sirfMeas, Output1, 30, filesToChooes);
+                SirfMLCsvWriter.printEverythingToSingleFile(sirfMeas, Output2, 30, filetochoose2);
+              //  SirfMLCsvWriter.PrintSeveralFilesToSInglefile();
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }

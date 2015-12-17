@@ -59,6 +59,8 @@ public class Sat {
     }
 
     public void setElevetion(double elevetion) {
+        if(elevetion>90)
+            elevetion=90;
         this.elevetion = elevetion;
     }
 

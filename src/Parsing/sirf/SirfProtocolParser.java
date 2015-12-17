@@ -17,6 +17,8 @@ import java.util.*;
 public class SirfProtocolParser {
 	
 	private static final String endOfBlock = "ThrPut";
+    public static final double LosNLOS_Border_Degree=3;
+
 
     private static Set<Integer> prns = new HashSet<Integer>();
 	
@@ -51,7 +53,7 @@ public class SirfProtocolParser {
       }
     }
 	public static List<SirfPeriodicMeasurement> parseFile(String path) throws IOException{
-		System.out.println("Parsing..");
+		System.out.println("Parsing File "+ path);
        // double Old_FLag,New_flag;
        // Old_FLag=0;
 		List<SirfPeriodicMeasurement> result = new ArrayList<SirfPeriodicMeasurement>();
@@ -84,7 +86,7 @@ public class SirfProtocolParser {
 
         }
 
-		System.out.println("Done Parsing.");
+		System.out.println("Done Parsing file "+path);
 
         return result;
 	}
@@ -393,6 +395,48 @@ public class SirfProtocolParser {
             Boolean isLos = LosAlgorithm.ComputeLos(receiverPointInUTM, buildings1, sat);
             meas.getSatellites().get(Prn).setLOS(isLos);
 
+        }
+    }
+
+
+    public void ComputeLosNLOSFromStaticPointWithBorderKnowladge(List<SirfPeriodicMeasurement> sirfMeas, List<Building> buildings1, Point3D receiverPointInUTM) {
+
+        Sat sat =null;
+        double satElevation;
+        boolean checkLos;
+        for(int i=2; i<sirfMeas.size(); i++ )
+        {
+            // Point3D reciverPos = sirfMeas.get(i).GetPosInUTM();
+
+            for (Integer Prn : sirfMeas.get(i).getSatellites().keySet()) {
+                sat = sirfMeas.get(i).getSatellites().get(Prn).getSatClass(Prn);
+                satElevation = sat.getElevetion();
+                Boolean isLos = LosAlgorithm.ComputeLos(receiverPointInUTM, buildings1, sat);
+                sirfMeas.get(i).getSatellites().get(Prn).setLOS(isLos);
+                if(isLos) // if there is LOS, decrese elevation by X degrees;
+                {
+                    sat.setElevetion(satElevation - LosNLOS_Border_Degree);
+                    checkLos = LosAlgorithm.ComputeLos(receiverPointInUTM, buildings1, sat);
+                    if(isLos != checkLos)
+                        sirfMeas.get(i).getSatellites().get(Prn).setisLosBorder(true);
+                    else
+                        sirfMeas.get(i).getSatellites().get(Prn).setisLosBorder(false);
+
+
+                }
+                else if(!isLos) // if there is NLOS, increase theelevation by X
+                {
+                    sat.setElevetion(satElevation + LosNLOS_Border_Degree);
+                    checkLos = LosAlgorithm.ComputeLos(receiverPointInUTM, buildings1, sat);
+                    if(isLos != checkLos)
+                        sirfMeas.get(i).getSatellites().get(Prn).setisLosBorder(true);
+                    else
+                        sirfMeas.get(i).getSatellites().get(Prn).setisLosBorder(false);
+                }
+
+
+
+            }
         }
     }
 

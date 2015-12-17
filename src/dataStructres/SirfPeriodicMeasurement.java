@@ -559,6 +559,8 @@ public class SirfPeriodicMeasurement implements Serializable{
         for(Integer PRN : this.getSatellites().keySet())
         {
             this.getSatellites().get(PRN).ComputedPSrangeNoVelocityShift(this.getClockBias7()/1000000000);
+			//this.getSatellites().get(PRN).ComputeRawRange(this.getECEFPOS());
+			this.getSatellites().get(PRN).ComputeCorrectedCarrierFreq();
         }
 
     }
@@ -612,6 +614,7 @@ public class SirfPeriodicMeasurement implements Serializable{
         Double PrevoiusDelta;
         int MaxSnrInSatHistory=20;
         int MinSnrInSatHistory=20;
+		double computedRelativeVelocity;
 
         for(Integer PRN: this.getSatellites().keySet())
         {
@@ -619,7 +622,20 @@ public class SirfPeriodicMeasurement implements Serializable{
            if(LastLastMessuare.getSatellites().get(PRN)!=null && LastMeaasure.getSatellites().get(PRN)!=null)
            {
 
-               MaxSnrInSatHistory = LastMeaasure.getSatellites().get(PRN).getMaxCn0InSatHistory();
+
+		/*	   double currentDist = this.getSatellites().get(PRN).getRawDistance();
+			   double oldRawDistance = LastMeaasure.getSatellites().get(PRN).getRawDistance();
+			   double oldOldRawDistance = LastLastMessuare.getSatellites().get(PRN).getRawDistance();
+
+			   this.getSatellites().get(PRN).setOldRawdistance(oldRawDistance);
+			   LastMeaasure.getSatellites().get(PRN).setOldRawdistance(oldOldRawDistance);
+			   LastMeaasure.getSatellites().get(PRN).setComputedRelativeVelocity(oldRawDistance-oldOldRawDistance);
+			   this.getSatellites().get(PRN).setComputedRelativeVelocity(currentDist - oldRawDistance);
+			   this.getSatellites().get(PRN).setComputedVelocityDerivative(this.getSatellites().get(PRN).getComputedRelativeVelocity()-LastLastMessuare.getSatellites().get(PRN).getComputedRelativeVelocity());
+			  */
+
+			   this.getSatellites().get(PRN).setDopplerResiduals(this.getSatellites().get(PRN).getComputedRelativeVelocity() -this.getSatellites().get(PRN).getCarrierFreq());
+			   MaxSnrInSatHistory = LastMeaasure.getSatellites().get(PRN).getMaxCn0InSatHistory();
                MinSnrInSatHistory = LastMeaasure.getSatellites().get(PRN).getMinCn0InSatHistory();
 
                this.getSatellites().get(PRN).setExtremeSNRValues(MaxSnrInSatHistory, MinSnrInSatHistory);
@@ -636,10 +652,12 @@ public class SirfPeriodicMeasurement implements Serializable{
                 PrevoiusCorrectedPs = LastMeaasure.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift();
                PrevoiusDelta = PrevoiusCorrectedPs - LastLastMessuare.getSatellites().get(PRN).getCorrectPseudoRangeNoVelocitySHift();
                 this.getSatellites().get(PRN).setPrevoiusCorrectedPseudoRangeNoVelocityShift(PrevoiusCorrectedPs);
+			   this.getSatellites().get(PRN).setComputedDistanceSatReciverECEF(0);
                this.getSatellites().get(PRN).setPrevoiusDeltaCorrectedPrNoVelocityShift(PrevoiusDelta);
                this.getSatellites().get(PRN).setPreviousCarrierPhase(LastMeaasure.getSatellites().get(PRN).getCarrierPhase());
                this.getSatellites().get(PRN).setDeltaIonosphericDelay(this.getSatellites().get(PRN).getIonosphericDelay()- LastMeaasure.getSatellites().get(PRN).getIonosphericDelay());
                this.getSatellites().get(PRN).setCarrierFreqDelta(  this.getSatellites().get(PRN).getCarrierFreq()-LastMeaasure.getSatellites().get(PRN).getCarrierFreq());
+			   this.getSatellites().get(PRN).setSecondDerivativeDeltaCorrectedPrNoVelocityShift();
             }
             else
            {
@@ -650,6 +668,7 @@ public class SirfPeriodicMeasurement implements Serializable{
                this.getSatellites().get(PRN).setPreviousCarrierPhase(this.getSatellites().get(PRN).getCarrierPhase());
                this.getSatellites().get(PRN).setDeltaIonosphericDelay(0d);
                this.getSatellites().get(PRN).setCarrierFreqDelta(0d);
+			   this.getSatellites().get(PRN).setSecondDerivativeDeltaCorrectedPrNoVelocityShift(0);
            }
 
 

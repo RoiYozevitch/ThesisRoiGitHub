@@ -41,6 +41,71 @@ public class SirfSVMeasurement {
     private Double prevoiusDeltaCorrectedPrNoVelocityShift;
     private Integer PrevoiusMaxCn02seconds=null;
     private double deltaCorrectedPrNovelocityShift;
+    private double SecondDerivativeDeltaCorrectedPrNoVelocityShift;
+
+    public double getComputedRelativeVelocityDerivate() {
+        return computedRelativeVelocityDerivate;
+    }
+
+    private double computedRelativeVelocityDerivate;
+
+    public double getCorrectedCarrierFreq() {
+        return CorrectedCarrierFreq;
+    }
+
+    private double CorrectedCarrierFreq;
+
+    public double getOldRawDistance() {
+        return oldRawDistance;
+    }
+
+    private double oldRawDistance;
+
+    public double getRawDistance() {
+        return RawDistance;
+    }
+
+    private double RawDistance;
+
+    public double getComputedRelativeVelocity() {
+        return computedRelativeVelocity;
+    }
+
+    public void setComputedRelativeVelocity(double computedRelativeVelocity) {
+        this.computedRelativeVelocity = computedRelativeVelocity;
+    }
+
+    public double computedRelativeVelocity;
+
+
+    public boolean isLosBorder() {
+        return isLosBorder;
+    }
+
+    private boolean isLosBorder;
+
+    public void setComputedDistanceSatReciverECEF(double computedDistanceSatReciverECEF) {
+        this.computedDistanceSatReciverECEF = computedDistanceSatReciverECEF;
+    }
+
+    private double computedDistanceSatReciverECEF;
+
+    public double getDopplerResiduals() {
+        return DopplerResiduals;
+    }
+
+    public void setDopplerResiduals(double dopplerResiduals) {
+        DopplerResiduals = dopplerResiduals;
+    }
+
+    double DopplerResiduals;
+
+
+    public double getComputedDistanceSatReciverECEF() {
+        return computedDistanceSatReciverECEF;
+    }
+
+
 
     public void setCarrierFreqDelta(double carrierFreqDelta) {
         this.carrierFreqDelta = carrierFreqDelta;
@@ -616,10 +681,20 @@ public class SirfSVMeasurement {
 
     }
 
+    public void setSecondDerivativeDeltaCorrectedPrNoVelocityShift() {
+
+        this.SecondDerivativeDeltaCorrectedPrNoVelocityShift = this.deltaCorrectedPrNovelocityShift - this.getPreviousDeltaCorrectedPrNovelocityShift();
+
+    }
+
+    public void setSecondDerivativeDeltaCorrectedPrNoVelocityShift(double secondDelta)
+    {
+        this.SecondDerivativeDeltaCorrectedPrNoVelocityShift = secondDelta;
+    }
+
     public double getSecondDerivativeDeltaCorrectedPrNoVelocityShift() {
         //return 0;
-        return this.deltaCorrectedPrNovelocityShift - this.getPreviousDeltaCorrectedPrNovelocityShift();
-
+        return this.SecondDerivativeDeltaCorrectedPrNoVelocityShift;
     }
 
     private Double getPreviousDeltaCorrectedPrNovelocityShift() {
@@ -639,6 +714,7 @@ public class SirfSVMeasurement {
     public void computePsResiduals(Point3D receiverPosECEF) {
 
         double ComputeddistanceSatReceiver = receiverPosECEF.distance(this.getSatPosInEcef());
+        this.computedDistanceSatReciverECEF = ComputeddistanceSatReceiver;
         this.PsResiduals = this.correctPseudoRangeNoVelocitySHift - ComputeddistanceSatReceiver;
     }
 
@@ -654,5 +730,38 @@ public class SirfSVMeasurement {
         int isCarrierMask = 2; //0b00000010
         int ans = isCarrierMask & this.getState();
         return ans;
+    }
+
+    public void setisLosBorder(boolean isLosBorder) {
+        this.isLosBorder = isLosBorder;
+    }
+
+    public void ComputeRawRange(Point3D ECEFpos) {
+
+        double dist = Math.sqrt(Math.pow(this.getxPos()-ECEFpos.getX(), 2) + Math.pow(this.getyPos()-ECEFpos.getY(), 2) +Math.pow(this.getzPos()-ECEFpos.getZ(), 2));
+        this.setRawDistance(dist);
+
+
+    }
+
+    private void setRawDistance(double dist) {
+        this.RawDistance = dist;
+    }
+
+    public void setOldRawdistance(double OldrawDistance) {
+
+        this.oldRawDistance = OldrawDistance;
+    }
+
+    public void ComputeCorrectedCarrierFreq() {
+
+        double computedCarrierFreq =  this.getCarrierFreq() - this.getClockDrift()*c/1575420000;
+        this.CorrectedCarrierFreq = computedCarrierFreq;
+
+    }
+
+    public void setComputedVelocityDerivative(double velocityDerivate) {
+        this.computedRelativeVelocityDerivate  = velocityDerivate;
+
     }
 }
