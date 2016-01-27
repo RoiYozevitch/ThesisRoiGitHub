@@ -9,6 +9,9 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	
 	double lat, lon, alt, altElip, HDOP;
 	long time;
+	double SpeedKnots;
+	double CogDegrees;
+
 	double UtcTime;
 	private Map<Integer, NMEASVMeasurement> mappedSvMeasurements;
 
@@ -20,6 +23,14 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 		this.altElip=altElip;
 		this.HDOP=hDOP;
         this.mappedSvMeasurements = new HashMap<>();
+	}
+
+	public double getSpeedKnots() {
+		return SpeedKnots;
+	}
+
+	public double getCogDegrees() {
+		return CogDegrees;
 	}
 
 	public double getAltElip(){
@@ -80,13 +91,15 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	}
 
 	public NMEAPeriodicMeasurement(long time, double UtcTime, double lat, double lon, double alt,
-								   double altElip, double hDOP, List<NMEASVMeasurement> sVs) {
+								   double altElip, double hDOP, double speed, double COG, List<NMEASVMeasurement> sVs) {
         this.mappedSvMeasurements = new HashMap<>();
 		this.time = time;
 		this.UtcTime  = UtcTime;
 		this.lat = lat;
 		this.lon = lon;
 		this.alt = alt;
+		this.SpeedKnots = speed;
+		this.CogDegrees = COG;
 		this.altElip = altElip;
 		HDOP = hDOP;
 		for (NMEASVMeasurement sv : sVs){

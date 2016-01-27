@@ -28,7 +28,7 @@ public class parsingMain {
 
     public static void main(String[] args) throws Exception {
 
-        //MovingRecording();
+        MovingRecording();
       //  SirfParseForGpsSwitch();
       SirfParsingML();
        // ParseToCsv();

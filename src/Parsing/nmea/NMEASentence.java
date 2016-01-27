@@ -76,7 +76,8 @@ public class NMEASentence {
 		GPGSV.put("S/Nr", 3);
 		sentencesToParse.put("$GLGSV", new NMEASentence("$GLGSV", GLGSV));
 
-		//GPGLL
+
+
 		Map<String, Integer> GPGGA = new TreeMap<String, Integer>();
 		GPGGA.put("time", 1);
 		GPGGA.put("lat", 2);
@@ -116,8 +117,8 @@ public class NMEASentence {
 		GPRMC.put("N_S", 4); // can be North or south/
 		GPRMC.put("lon", 5);
 		GPRMC.put("E_W", 6); // can be west or east
-		GPRMC.put("speedKm_H", 7);
-		GPRMC.put("course", 8);
+		GPRMC.put("SpeedKnots", 7);
+		GPRMC.put("COG_degree", 8);
 		GPRMC.put("date", 9);
 		sentencesToParse.put("$GPRMC", new NMEASentence("$GPRMC", GPRMC));
 

@@ -116,14 +116,14 @@ public class SirfMLCsvWriter {
       */
 
         String res = "";
-        for (Integer PRN : meas.getSatellites().keySet()) {
-            SirfSVMeasurement sv = meas.getSatellites().get(PRN);
-            if (IsGoodMeassurment(sv)) {
-                res += PRN +",";
-                res += meas.getTime() +",";
-                res += sv.getElevation() + ",";
-                res += sv.ifCarrierPhaseLock() + ",";
-                res += sv.getCorrectPsResiduals() + ",";
+for (Integer PRN : meas.getSatellites().keySet()) {
+    SirfSVMeasurement sv = meas.getSatellites().get(PRN);
+    if (IsGoodMeassurment(sv)) {
+        res += PRN +",";
+        res += meas.getTime() +",";
+        res += sv.getElevation() + ",";
+        res += sv.ifCarrierPhaseLock() + ",";
+        res += sv.getCorrectPsResiduals() + ",";
                 res += sv.getPreivousMaxCno2seconds() + ",";
                 res += sv.getCorrectedCarrierFreq() + ",";
                 res += sv.getCarrierPhase() - sv.getPreviousCarrierPhase() + ",";

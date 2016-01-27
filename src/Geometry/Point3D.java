@@ -86,6 +86,13 @@ public class Point3D  extends Point2D{
         return true;
     }
 
+    public void offset(double x, double y, double z)
+    {
+        this.setX(this.getX()+x);
+        this.setY(this.getY()+y);
+        this.setZ(this.getZ()+z);
+    }
+
     public void rescale(Point3D center, double size) {
         if(center!=null && size>0)
             rescale(center,size,size,size);
