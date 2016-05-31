@@ -8,7 +8,7 @@ public class NMEAPeriodicMeasurement implements  Serializable{
 	private static final long serialVersionUID = 886357302201842088L;
 	
 	double lat, lon, alt, altElip, HDOP;
-	double COG,SOG:
+	double COG, SOG;
 	long time;
 	double UtcTime;
 	private Map<Integer, NMEASVMeasurement> mappedSvMeasurements;

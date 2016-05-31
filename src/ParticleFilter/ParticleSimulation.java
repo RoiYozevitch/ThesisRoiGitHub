@@ -31,7 +31,7 @@ public class ParticleSimulation {
     private static void NMEAParser() {
 
         NMEAProtocolParser parser = new NMEAProtocolParser();
-        String NMEAFIlePath = "";
+        String NMEAFIlePath = "NmeaSample.txt";
         List<NMEAPeriodicMeasurement> NmeaList = null;
         try {
             NmeaList = parser.parse(NMEAFIlePath);
@@ -41,7 +41,17 @@ public class ParticleSimulation {
             e.printStackTrace();
         }
 
-        for(int i=0; i<NmeaList)
+        for(int i=0; i<NmeaList.size();i++)
+        {
+            List<Sat> allSat = UtilsAlgorithms.GetUpdateSatList(NmeaList.get(i));
+            for(int j=0; j< allSat.size(); j++)
+
+            {
+                System.out.print("id: "+allSat.get(j).getSatID()+"Az: "+allSat.get(j).getAzimuth()+" El: "+allSat.get(j).getElevetion()+" SNR: "+allSat.get(j).getSingleSNR());
+            }
+            System.out.println();
+            System.out.println("Timestamp "+ i);
+        }
 
 
     }
