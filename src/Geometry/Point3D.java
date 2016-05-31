@@ -22,6 +22,19 @@ public class Point3D  extends Point2D{
 
     }
 
+    public double angleXY_2PI(Point3D p) {
+        if(p==null) throw new RuntimeException("** Error: Point3D angle got null **");
+        double ans = Math.atan2((p.getY()-this.getY()), (p.getX()- this.getX()));
+        if (ans<0) ans = 2*Math.PI+ans;
+        return ans;
+    }
+
+    public void offset(double dX, double dY, double dZ)
+    {
+        super.offset(dX, dY);
+        this.z+=dZ;
+    }
+
     public double getZ() {
         return z;
     }

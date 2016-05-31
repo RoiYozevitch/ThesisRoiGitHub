@@ -31,6 +31,11 @@ public class Building {
         }
     }
 
+
+    public boolean isContain(Point3D pos) // if the point lies in the building, return true;
+    {
+        return false;
+    }
     private void init(List<Point3D> buildingVertecies){
         generateBuildingFromPoint3dList(buildingVertecies);
         setMaxHeight();

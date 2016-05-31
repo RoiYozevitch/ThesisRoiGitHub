@@ -12,6 +12,8 @@ public class Sat {
     double azimuth, elevetion;
     int satID;
     public int[] snr;
+    public int SingleSNR;
+
 
     public Sat(Point3D satPosInECEF, double azimuth, double elevetion, int satID) {
         this.satPosInECEF = satPosInECEF;
@@ -20,12 +22,29 @@ public class Sat {
         this.satID = satID;
     }
 
+    public int getSingleSNR() {
+        return SingleSNR;
+    }
+
+    public void setSingleSNR(int singleSNR) {
+        SingleSNR = singleSNR;
+    }
+
     public Sat(double azimuth, double elevetion, int satID)
     {
         this.azimuth = azimuth;
         this.elevetion = elevetion;
         this.satID = satID;
     }
+
+    public Sat(double azimuth, double elevetion, int satID, int SNR)
+    {
+        this.azimuth = azimuth;
+        this.elevetion = elevetion;
+        this.satID = satID;
+        this.SingleSNR = SNR;
+    }
+
 
     public double distanceFromSatToPos(Point3D pos)
     {

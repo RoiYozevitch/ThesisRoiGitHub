@@ -6,6 +6,7 @@ public class NMEASVMeasurement {
 
 	public static NMEASVMeasurement nullMeas = new NMEASVMeasurement(-1, -1, -1, -1);
 	protected int az, el, snr, prn;
+	private boolean isLos;
 
 	public NMEASVMeasurement(int prn, int el, int az, int snr) {
 		this.az = az;
@@ -14,6 +15,7 @@ public class NMEASVMeasurement {
 		this.prn = prn;
 	}
 
+
 	public NMEASVMeasurement(int prn, int snr)
 	{
 		this.prn = prn;
@@ -21,7 +23,23 @@ public class NMEASVMeasurement {
 	}
 
 
+	public void ComputeNaiveLOSWithTHreshold(int SNRthreshold, int margin)
+	{
+		if(this.getSnr()>SNRthreshold)
+			this.setLos(true);
+		else if(this.getSnr()<(SNRthreshold-margin))
+			this.setLos(false);
 
+	}
+	
+
+	public boolean isLos() {
+		return isLos;
+	}
+
+	public void setLos(boolean los) {
+		isLos = los;
+	}
 
 	/**
 	 * @return the az

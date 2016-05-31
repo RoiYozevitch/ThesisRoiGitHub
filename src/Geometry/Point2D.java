@@ -11,6 +11,12 @@ public class Point2D {
         this.y = y;
     }
 
+    public void offset(double dX, double dY)
+    {
+        this.x+=dX;
+        this.y+=dY;
+    }
+
     public void setX(double x) {
         this.x = x;
     }
