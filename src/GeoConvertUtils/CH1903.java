@@ -23,8 +23,7 @@
 
 package GeoConvertUtils;
 
-import javax.swing.*;
-import java.awt.*;
+
 
 /* http://www.swisstopo.ch   /  http://topo.epfl.ch/transcoco.php
  * (484000, 74000) -> 5�56'47.5, 45�48'27.8 / 5�56'46.79, 45�48'27.5
@@ -56,15 +55,11 @@ public class CH1903 extends Coordinates {
   /**
    * graphic text field to receive east coordinate value
    */
-  protected JTextField tx = null;
+
   /**
    * graphic text field to receive north coordinate value
    */
-  protected JTextField ty = null;
-  /**
-   * graphic text field to receive altitude value
-   */
-  protected JTextField tz = null;
+
 
   /**
    * whether the text fields may have been edited by the user
@@ -124,30 +119,7 @@ public class CH1903 extends Coordinates {
   /**
    * read data from graphic widget if needed
    */
-  protected void update() {
-    if(edited) {
-      edited = false;
-      try {
-	x = Coordinates.parseLength(tx.getText());
-      }
-      catch(NumberFormatException e1) {
-	x = 0;
-      }
-      try {
-	y = Coordinates.parseLength(ty.getText());
-      }
-      catch(NumberFormatException e2) {
-	y = 0;
-      }
-      try {
-	z = Coordinates.parseAltitude(tz.getText());
-      }
-      catch(NumberFormatException e2) {
-	z = 0;
-      }
-      check();
-    }
-  }
+
 
   /**
    * returns this coordinate as a string
@@ -155,7 +127,6 @@ public class CH1903 extends Coordinates {
    * @return string formated as "Swiss east north altitude"
    */
   public String toString() {
-    update();
     return getName() + " " + Coordinates.lengthToString(x) + " " +
       Coordinates.lengthToString(y) + " " + Coordinates.altitudeToString(z);
   }
@@ -213,7 +184,6 @@ public class CH1903 extends Coordinates {
    * @return WGS84 coordinates object
    */
   public WGS84 toWGS84() {
-    update();
     /*
     double X = y - 200000.0;
     double Y = x - 600000.0;
@@ -287,51 +257,6 @@ public class CH1903 extends Coordinates {
    * 
    * @param panel parent window to create wigets in
    */
-  public void editor(JPanel panel) {
-    GridBagLayout layout = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    c.anchor = GridBagConstraints.WEST;
-    c.fill = GridBagConstraints.BOTH;
-    panel.setLayout(layout);
-
-    JLabel lx = new JLabel(" Y=");
-    c.gridx = 1;
-    c.gridy = 0;
-    c.weightx = 0.0;
-    layout.setConstraints(lx, c);
-    panel.add(lx);
-    tx = new JTextField(Coordinates.lengthToString(x));
-    c.gridx = 2;
-    c.weightx = 1.0;
-    layout.setConstraints(tx, c);
-    panel.add(tx);
-    
-    JLabel ly = new JLabel(" X=");
-    c.gridx = 1;
-    c.gridy = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(ly, c);
-    panel.add(ly);
-    ty = new JTextField(Coordinates.lengthToString(y));
-    c.gridx = 2;
-    c.weightx = 1.0;
-    layout.setConstraints(ty, c);
-    panel.add(ty);
-    
-    JLabel lz = new JLabel(" Z=");
-    c.gridx = 1;
-    c.gridy = 2;
-    c.weightx = 0.0;
-    layout.setConstraints(lz, c);
-    panel.add(lz);
-    tz = new JTextField(Coordinates.altitudeToString(z));
-    c.gridx = 2;
-    c.weightx = 1.0;
-    layout.setConstraints(tz, c);
-    panel.add(tz);
-    
-    setEditable(false);
-  }
 
 
   /**
@@ -340,13 +265,7 @@ public class CH1903 extends Coordinates {
    * @param edit wheter to toggle on or off
    */
   public void setEditable(boolean edit) {
-   if(tx != null) {
-      if(edit)
-	edited = true;
-      tx.setEditable(edit);
-      ty.setEditable(edit);
-      tz.setEditable(edit);
-    }
+
   }
 }
 

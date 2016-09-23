@@ -23,8 +23,6 @@
 
 package GeoConvertUtils;
 
-import javax.swing.*;
-import java.awt.*;
 
 
 /**
@@ -57,8 +55,7 @@ public class WGS84 extends Coordinates {
   /**
    * ellipsoidal elevation graphic widget
    */
-  private JTextField th = null;
-  
+
   /**
    * whether the graphic widget may have been edited
    */
@@ -121,19 +118,7 @@ public class WGS84 extends Coordinates {
   /**
    * read data from graphic widget if needed
    */
-  private void update() {
-    if(edited) {
-      edited = false;
-      longitude = tlg.getAngle();
-      latitude = tlt.getAngle();
-      try {
-	h = Coordinates.parseAltitude(th.getText());
-      }
-      catch(NumberFormatException e) {
-	h = 0.0;
-      }
-    }
-  }
+
 
 
   /**
@@ -142,7 +127,7 @@ public class WGS84 extends Coordinates {
    * @return string formated as "WGS84 longitude latitude elevation"
    */
   public String toString() {
-    update();
+
     return getName() + " " + Math.toDegrees(Double.parseDouble(Coordinates.angleToString(longitude))) + " " +
     Math.toDegrees(Double.parseDouble(Coordinates.angleToString(latitude))) + " " +
       Coordinates.altitudeToString(h);
@@ -155,7 +140,7 @@ public class WGS84 extends Coordinates {
    * @return new WGS84 coordinate identical to <code>this</code>
    */
   public WGS84 toWGS84() {
-    update();
+
     return new WGS84(longitude, latitude, h);
   }
 
@@ -191,51 +176,7 @@ public class WGS84 extends Coordinates {
    * 
    * @param panel parent window to create wigets in
    */
-  public void editor(JPanel panel) {
-    GridBagLayout layout = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    c.anchor = GridBagConstraints.WEST;
-    c.fill = GridBagConstraints.BOTH;
-    panel.setLayout(layout);
-    c.gridy = 0;
 
-    JLabel llg = new JLabel("lg=");
-    c.gridx = 0;
-    c.weightx = 0.0;
-    layout.setConstraints(llg, c);
-    panel.add(llg);
-    tlg = new JAngle(longitude);
-    c.gridx = 1;
-    c.weightx = 1.0;
-    layout.setConstraints(tlg, c);
-    panel.add(tlg);
-    
-    JLabel llt = new JLabel("lt=");
-    c.gridx = 0;
-    c.gridy = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(llt, c);
-    panel.add(llt);
-    tlt = new JAngle(latitude);
-    c.gridx = 1;
-    c.weightx = 1.0;
-    layout.setConstraints(tlt, c);
-    panel.add(tlt);
-    
-    JLabel lh = new JLabel("h=");
-    c.gridx = 0;
-    c.gridy = 2;
-    c.weightx = 0.0;
-    layout.setConstraints(lh, c);
-    panel.add(lh);
-    th = new JTextField(Coordinates.altitudeToString(h));
-    c.gridx = 1;
-    c.weightx = 1.0;
-    layout.setConstraints(th, c);
-    panel.add(th);
-    
-    setEditable(false);
-  }
 
   /**
    * toggle the editable property of the graphic widgets
@@ -243,13 +184,6 @@ public class WGS84 extends Coordinates {
    * @param edit wheter to toggle on or off
    */
   public void setEditable(boolean edit) {
-    if(tlt != null) {
-      if(edit)
-	edited = true;
-      tlt.setEditable(edit);
-      tlg.setEditable(edit);
-      th.setEditable(edit);
-    }
   }
 }
 

@@ -94,5 +94,62 @@ public class Point2D {
     public double getY() {
         return y;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////
+
+    public final static int ONSEGMENT = 0,  LEFT = 1, RIGHT = 2, INFRONTOFA = 3, BEHINDB = 4, ERROR = 5;
+
+    /** pointLineTest <br>
+     test the following location of a point regards a line segment - all in 2D projection.<br><br>
+
+     ONSEGMENT:  �����a----+----b������                              <br> <br>
+
+     +       +        +                              <br>
+     LEFT:	 �����a---------b������                              <br> <br>
+
+
+     RIGHT:	 �����a---------b������                              <br>
+     +      +        +                              <br> <br>
+
+     INFRONTOFA:  ��+��a---------b������                              <br>
+     BEHINDB:  �����a---------b����+�                              <br>
+     ERROR: a==b || a==null || b == null;                               <br>
+     */
+
+    public int pointLineTest( Point2D a, Point2D b) {
+
+        if(a== null || b==null || a.equals(b)) return ERROR;
+
+        double dx = b.getX()-a.getX();
+        double dy = b.getY()-a.getY();
+        double res = dy*(this.x-a.getX())-dx*(this.getY()-a.getY());
+
+        if (res < 0) return LEFT;
+        if (res > 0) return RIGHT;
+
+        if (dx > 0) {
+            if (this.getX() < a.getX()) return INFRONTOFA;
+            if (b.getX() < this.getX()) return BEHINDB;
+            return ONSEGMENT;
+        }
+        if (dx < 0) {
+            if (this.getX() > a.getX()) return INFRONTOFA;
+            if (b.getX() > this.getX()) return BEHINDB;
+            return ONSEGMENT;
+        }
+        if (dy > 0) {
+            if (this.getY() < a.getY()) return INFRONTOFA;
+            if (b.getY() < this.getY()) return BEHINDB;
+            return ONSEGMENT;
+        }
+        if (dy < 0) {
+            if (this.getY() > a.getY()) return INFRONTOFA;
+            if (b.getY() > this.getY()) return BEHINDB;
+            return ONSEGMENT;
+        }
+        return ERROR;
+    }
+
+
 }
 

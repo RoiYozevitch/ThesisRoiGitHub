@@ -20,13 +20,67 @@ public class NMEAProtocolParser {
 	public NMEAProtocolParser() {
 	}
 
+
+	public NMEAPeriodicMeasurement ParseStringList(List<String> parseString) {
+
+		double lat = 0, lon = 0, alt = 0, altElip = 0, hDOP = 0;
+		double Course = 0, Speed = 0;
+		long time = 0;
+		double UtcTime = 0;
+		double time2 = 0;
+		List<NMEASVMeasurement> svList = new ArrayList<NMEASVMeasurement>();
+
+		for (int i = 0; i < parseString.size(); i++) {
+			String[] data = filter(parseString.get(i)).split(",");
+			NMEASentence currentSentence = NMEASentence.sentencesToParse.get(data[0]);
+			if (currentSentence == null){
+				continue;
+			}
+
+
+			if (currentSentence.getSentenceName().equals("$GPRMC")) {
+				// DateFormat df = new SimpleDateFormat("HHmmss.SSS");
+				time2 = Double.parseDouble(data[currentSentence.getfieldsIndexByName("UtcTime")]);
+				//UtcTime  = df.parse(data[currentSentence.getfieldsIndexByName("UtcTime")]).getTime();
+				UtcTime = time2;
+				Course = Double.parseDouble(data[currentSentence.getfieldsIndexByName("course")]);
+				Speed = Double.parseDouble(data[currentSentence.getfieldsIndexByName("speedKm_H")]);
+			}
+			if (currentSentence.getSentenceName().equals("$GPGGA")) {
+				time = Long.parseLong(data[currentSentence.getfieldsIndexByName("time")].replace(".", ""));
+				String latString = data[currentSentence.getfieldsIndexByName("lat")];
+				if (!latString.equals("")) {
+					lat = Double.parseDouble(latString) / 100;
+					lon = Double.parseDouble(data[currentSentence.getfieldsIndexByName("lon")]) / 100;
+					hDOP = Double.parseDouble(data[currentSentence.getfieldsIndexByName("hDOP")]);
+					alt = Double.parseDouble(data[currentSentence.getfieldsIndexByName("alt")]);
+					altElip = Double.parseDouble(data[currentSentence.getfieldsIndexByName("altElip")]);
+				}
+			}
+			if (isSVDataSentence(currentSentence)) {
+				addSVData(svList, data);
+			}
+			if (isExtra(currentSentence)) {
+				doSomething(currentSentence);
+			}
+
+
+	}
+
+		NMEAPeriodicMeasurement ans = new NMEAPeriodicMeasurement(time, UtcTime, lat, lon, alt, altElip, hDOP, svList, Course, Speed);
+
+	return ans;
+	}
+
 	public List<NMEAPeriodicMeasurement> parse(String path) throws IOException, ParseException {
 		List<NMEAPeriodicMeasurement> result = new ArrayList<NMEAPeriodicMeasurement>();
 		BufferedReader br = new BufferedReader(new FileReader(path)); //todo throw spesific exeption. Check where an NMEA msg starts
 		String line;
 		double lat = 0, lon = 0, alt = 0, altElip = 0, hDOP = 0;
+		double Course=0, Speed=0;
 		long time = 0;
-		long UtcTime=0;
+		double UtcTime=0;
+		double time2=0;
 		List<NMEASVMeasurement> svList = new ArrayList<NMEASVMeasurement>();
 		while((line = br.readLine()) != null){
 			String[] data = filter(line).split(",");
@@ -38,25 +92,29 @@ public class NMEAProtocolParser {
 				continue;
 			}
 			if (hasTimestamp(currentSentence) && Long.parseLong(data[currentSentence.getfieldsIndexByName("UtcTime")].replace(".", "")) != UtcTime){
-				result.add(new NMEAPeriodicMeasurement(time, UtcTime,  lat, lon, alt, altElip, hDOP, svList));
+				result.add(new NMEAPeriodicMeasurement(time, UtcTime,  lat, lon, alt, altElip, hDOP, svList, Course, Speed));
 				lat = 0;
 				lon = 0; alt = 0;
 				altElip = 0;
 				hDOP = 0;
 				time = 0;
+				Course=0;
+				Speed=0;
 				svList = new ArrayList<NMEASVMeasurement>();
 			}
 			if(currentSentence.getSentenceName().equals("$GPRMC"))
 			{
-                DateFormat df = new SimpleDateFormat("HHmmss.SSS");
-                UtcTime  = df.parse(data[currentSentence.getfieldsIndexByName("UtcTime")]).getTime();
+               // DateFormat df = new SimpleDateFormat("HHmmss.SSS");
+                time2  = Double.parseDouble(data[currentSentence.getfieldsIndexByName("UtcTime")]);
+				//UtcTime  = df.parse(data[currentSentence.getfieldsIndexByName("UtcTime")]).getTime();
+				UtcTime = time2;
+					Course = Double.parseDouble(data[currentSentence.getfieldsIndexByName("course")]);
+				Speed =  Double.parseDouble(data[currentSentence.getfieldsIndexByName("speedKm_H")]);
 			}
 			if (currentSentence.getSentenceName().equals("$GPGGA")){
 				time = Long.parseLong(data[currentSentence.getfieldsIndexByName("time")].replace(".", ""));
 				String latString = data[currentSentence.getfieldsIndexByName("lat")];
 				if (!latString.equals("")){
-					System.out.println(latString);
-
 					lat = Double.parseDouble(latString) / 100;
 					lon = Double.parseDouble(data[currentSentence.getfieldsIndexByName("lon")]) / 100;
 					hDOP = Double.parseDouble(data[currentSentence.getfieldsIndexByName("hDOP")]);
@@ -71,7 +129,7 @@ public class NMEAProtocolParser {
 				doSomething(currentSentence);
 			}
 		}
-		result.add(new NMEAPeriodicMeasurement(time, UtcTime, lat, lon, alt, altElip, hDOP, svList));
+		result.add(new NMEAPeriodicMeasurement(time, UtcTime, lat, lon, alt, altElip, hDOP, svList, Course, Speed));
 		return result;
 	}
 

@@ -1,7 +1,9 @@
 package ParticleFilter;
 
+import Geometry.Point2D;
 import Geometry.Point3D;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -16,6 +18,54 @@ import java.util.Random;
  // action[0] is the move from path[0] to path[1]
  // hence, action[i].ChangeinSatState is the change of state from path[i] to path[i+1]
 public class ActionFunction {
+
+
+    public static double MIN_SoG = 0.5, CoG_ERR = 45;
+    public static double MIN_MOVE = 0.5, SOG_ERR_FACTOR=1.0, CoG_POLYNOM = 2.0, SoG_ERR_POW = 0.5;
+
+
+    public static Point2D randomPoint(double CoG, double SoG) {
+        return randomPoint(CoG, SoG, 1.0);}
+    public static Point2D randomPoint(double CoG_deg, double SoG_m2s, double dt) {
+        double x=0, y=0;
+        double dist = SoG_m2s*dt;
+        if(SoG_m2s < MIN_SoG) {
+            double ds = Math.max(dist, 	MIN_MOVE);
+            double rx = Math.random()-0.5;
+            double ry = Math.random()-0.5;
+            x = rx*ds;
+            y = ry*ds;
+        }
+        else{
+            double d1 = Math.random()-0.5;
+            dist += d1*SOG_ERR_FACTOR;
+
+            double d2 = Math.random();
+            d2 = Math.pow(d2, CoG_POLYNOM);
+            if(Math.random()<0.5) d2 = -d2;
+            double err_cog = 1/Math.pow(SoG_m2s,SoG_ERR_POW);
+            double d_cog = err_cog*d2*CoG_ERR;
+            double ang_rad = Math.toRadians(CoG_deg+d_cog);
+            x = dist*Math.sin(ang_rad);
+            y = dist*Math.cos(ang_rad);
+        }
+        Point2D ans = new Point2D(x,y);
+        return ans;
+    }
+    private static Point2D cen_of_g(ArrayList<Point2D> b) {
+        double x=0, y=0;
+        int len = b.size();
+        for(int i=0;i<len;i++) {
+            x += b.get(i).getX();
+            y += b.get(i).getY();
+        }
+        x /= len;
+        y /= len;
+        Point2D ans = new Point2D(x,y);
+        return ans;
+    }
+
+
 
     public double getVelocity() {
         return velocity;

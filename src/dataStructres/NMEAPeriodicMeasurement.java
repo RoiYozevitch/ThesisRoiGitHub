@@ -23,6 +23,34 @@ public class NMEAPeriodicMeasurement implements  Serializable{
         this.mappedSvMeasurements = new HashMap<>();
 	}
 
+	public NMEAPeriodicMeasurement(double utcTime, double lat, double lon, double alt, double altElip, double hDOP, double course, double speed) {
+		this.UtcTime=utcTime;
+		this.lat=lat;
+		this.lon=lon;
+		this.alt=alt;
+		this.altElip=altElip;
+		this.HDOP=hDOP;
+		this.COG = course;
+		this.SOG = speed;
+		this.mappedSvMeasurements = new HashMap<>();
+	}
+
+	public NMEAPeriodicMeasurement(long time, double utcTime, double lat, double lon, double alt, double altElip, double hDOP, List<NMEASVMeasurement> svList, double course, double speed) {
+		this.mappedSvMeasurements = new HashMap<>();
+		this.time = time;
+		this.UtcTime  = utcTime;
+		this.lat = lat;
+		this.lon = lon;
+		this.alt = alt;
+		this.COG = course;
+		this.SOG = speed;
+		this.altElip = altElip;
+		HDOP = hDOP;
+		for (NMEASVMeasurement sv : svList){
+			mappedSvMeasurements.put(sv.getPrn(), sv);
+		}
+	}
+
 
 	public double getSOG() {
 		return SOG;

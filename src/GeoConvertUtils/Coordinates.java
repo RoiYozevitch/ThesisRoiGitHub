@@ -23,7 +23,7 @@
 
 package GeoConvertUtils;
 
-import javax.swing.*;
+//import javax.swing.*;
 import java.util.Iterator;
 
 
@@ -276,8 +276,6 @@ public abstract class Coordinates {
    *
    * @param panel top window in which creating the widgets
    */
-  public abstract void editor(JPanel panel);
-
 
   /**
    * each coordinate system should be able to toggle the editable property

@@ -107,7 +107,6 @@ public class Lambert93 extends Lambert {
    * @return WGS84 coordinates object
    */
   public WGS84 toWGS84() {
-    update();
     /*
      * Lambert93 projection => Lambert93 geographic (= WGS84 geographic)
      */

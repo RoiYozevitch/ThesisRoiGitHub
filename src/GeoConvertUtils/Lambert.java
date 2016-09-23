@@ -23,8 +23,7 @@
 
 package GeoConvertUtils;
 
-import javax.swing.*;
-import java.awt.*;
+//import javax.swing.*;
 
 
 /**
@@ -57,23 +56,10 @@ public class Lambert extends Coordinates {
   /**
    * graphic text field to receive zone information
    */
-  private JTextField tzone = null;
-  /**
-   * graphic text field to receive east coordinate value
-   */
-  protected JTextField tx = null;
-  /**
-   * graphic text field to receive north coordinate value
-   */
-  protected JTextField ty = null;
-  /**
-   * graphic text field to receive altitude value
-   */
-  protected JTextField tz = null;
 
   /**
-   * whether the text fields may have been edited by the user
-   */
+   * graphic text field to receive altitude value
+
   protected boolean edited = false;
 
   /**
@@ -131,42 +117,7 @@ public class Lambert extends Coordinates {
   /**
    * read data from graphic widget if needed
    */
-  protected void update() {
-    if(edited) {
-      edited = false;
-      if(tzone != null) {
-	String str = tzone.getText().trim().toLowerCase();
-	if(str.equals("i") || str.equals("1"))
-	  zone = 1;
-	else if(str.equals("ii") || str.equals("2"))
-	  zone = 2;
-	else if(str.equals("iii") || str.equals("3"))
-	  zone = 3;
-	else if(str.equals("iv") || str.equals("4"))
-	  zone = 4;
-	else
-	  zone = 1;
-      }
-      try {
-	x = Coordinates.parseLength(tx.getText());
-      }
-      catch(NumberFormatException e1) {
-	x = 0;
-      }
-      try {
-	y = Coordinates.parseLength(ty.getText());
-      }
-      catch(NumberFormatException e2) {
-	y = 0;
-      }
-      try {
-	z = Coordinates.parseAltitude(tz.getText());
-      }
-      catch(NumberFormatException e2) {
-	z = 0;
-      }
-    }
-  }
+
 
   /**
    * returns this coordinate as a string
@@ -174,7 +125,7 @@ public class Lambert extends Coordinates {
    * @return string formated as "Lambert [1-4] east north altitude"
    */
   public String toString() {
-    update();
+
     String res = getName();
     if(zone <= 4)
       res += " " + String.valueOf(zone);
@@ -244,7 +195,6 @@ public class Lambert extends Coordinates {
    * @return WGS84 coordinates object
    */
   public WGS84 toWGS84() {
-    update();
     int zone = this.zone - 1;
 
     /*
@@ -266,6 +216,12 @@ public class Lambert extends Coordinates {
     Geographic wgs = new Geographic(lambert, Ellipsoid.GRS80);
 
     return new WGS84(wgs.lon(), wgs.lat(), /*wgs.h()*/z);
+  }
+
+  @Override
+  public void setEditable(boolean edit) {
+
+
   }
 
 
@@ -301,80 +257,7 @@ public class Lambert extends Coordinates {
    * 
    * @param panel parent window to create wigets in
    */
-  public void editor(JPanel panel) {
-    GridBagLayout layout = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    c.anchor = GridBagConstraints.WEST;
-    c.fill = GridBagConstraints.BOTH;
-    panel.setLayout(layout);
-    c.gridy = 0;
 
-    if(zone <= 4) {
-      JLabel lzone = new JLabel("zone ");
-      c.gridx = 0;
-      c.weightx = 0.0;
-      layout.setConstraints(lzone, c);
-      panel.add(lzone);
-      tzone = new JTextField(2);
-      switch(zone) {
-      case 1:
-	tzone.setText("I");
-	break;
-      case 2:
-	tzone.setText("II");
-	break;
-      case 3:
-	tzone.setText("III");
-	break;
-      case 4:
-	tzone.setText("IV");
-	break;
-      }
-      c.gridx = 1;
-      c.weightx = 0.0;
-      layout.setConstraints(tzone, c);
-      panel.add(tzone);
-    }
-    else
-      tzone = null;
-    
-    JLabel lx = new JLabel(" X=");
-    c.gridx = 2;
-    c.weightx = 0.0;
-    layout.setConstraints(lx, c);
-    panel.add(lx);
-    tx = new JTextField(Coordinates.lengthToString(x));
-    c.gridx = 3;
-    c.weightx = 1.0;
-    layout.setConstraints(tx, c);
-    panel.add(tx);
-    
-    JLabel ly = new JLabel(" Y=");
-    c.gridx = 2;
-    c.gridy = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(ly, c);
-    panel.add(ly);
-    ty = new JTextField(Coordinates.lengthToString(y));
-    c.gridx = 3;
-    c.weightx = 1.0;
-    layout.setConstraints(ty, c);
-    panel.add(ty);
-    
-    JLabel lz = new JLabel(" Z=");
-    c.gridx = 2;
-    c.gridy = 2;
-    c.weightx = 0.0;
-    layout.setConstraints(lz, c);
-    panel.add(lz);
-    tz = new JTextField(Coordinates.altitudeToString(z));
-    c.gridx = 3;
-    c.weightx = 1.0;
-    layout.setConstraints(tz, c);
-    panel.add(tz);
-    
-    setEditable(false);
-  }
 
 
   /**
@@ -382,17 +265,8 @@ public class Lambert extends Coordinates {
    *
    * @param edit wheter to toggle on or off
    */
-  public void setEditable(boolean edit) {
-   if(tx != null) {
-      if(edit)
-	edited = true;
-      if(tzone != null)
-	tzone.setEditable(edit);
-      tx.setEditable(edit);
-      ty.setEditable(edit);
-      tz.setEditable(edit);
-    }
-  }
+
+
 }
 
 

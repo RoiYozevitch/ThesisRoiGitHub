@@ -134,5 +134,9 @@ public class Point3D  extends Point2D{
                 '}';
     }
 
+    public void offsetByPoint(Point2D pivot) {
+
+        super.offset(pivot.getX(), pivot.getY());
+    }
 }
 

@@ -23,8 +23,6 @@
 
 package GeoConvertUtils;
 
-import javax.swing.*;
-import java.awt.*;
 
 
 /**
@@ -81,11 +79,7 @@ public class NoCoordinates extends Coordinates {
   /**
    * creates an empty panel
    */
-  public void editor(JPanel panel) {
-    panel.setLayout(new BorderLayout());
-    panel.add(new JPanel(), BorderLayout.CENTER);
-  }
-  
+
   /**
    * does nothing
    */

@@ -2,6 +2,7 @@ package ParticleFilter;
 
 import GNSS.Sat;
 import Geometry.Building;
+import Geometry.Point2D;
 import Geometry.Point3D;
 import dataStructres.NMEAPeriodicMeasurement;
 
@@ -24,7 +25,7 @@ public class Particles {
 
 
     private List<Particle> ParticleList;
-    static final int NumberOfParticles=2500;
+    static final int NumberOfParticles=625;
 
     public static final double VelocityGauusianError=0.1;
    public  static final double VelocityHeadingError=0.5;
@@ -32,7 +33,74 @@ public class Particles {
     private double MovingNoise=0;
     private double TurnNoise = 0;
     private int SenseNoise = 0;
+    public static double MIN_SoG = 0.5, CoG_ERR = 15, ERR_VAL = 0.1, CORRECT_VAL = 3.0;
+    public static double MIN_MOVE = 0.5, SOG_ERR_FACTOR=0.3, CoG_POLYNOM = 2.0, SoG_ERR_POW = 0.8;
+    public static double MIN_SNR = 10, MAX_SNR=48;
+    public static double NLOS_SNR = 28, LOS_SNR=37;
+    public static double X_radius = 10;
+    public static double Y_radius = 10;
+    public static double PercentOfMaxWeight = 0.6; // 60 %
+
+
+    public static double[] _nlos ={1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0.99,0.96,0.92,0.9,0.87,0.85,0.84,0.8,0.77,0.75,0.7,0.6,0.55,0.5,0.4,0.35,0.3,0.25,0.2,0.15,0.1,0.05,0,0,0,0,0,0,0,0};
+    public static double[] _los = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0.05,0.06,0.07,0.08,0.09,0.1,0.11,0.13,0.15,0.17,0.2,0.23,0.27,0.3,0.35,0.4,0.45,0.5,0.6,0.7,0.85,0.9,0.92,0.93,0.95,1,1,1,1,1,1};
     Random R1;
+
+
+    public static double eval(Boolean los, double snr) {
+        double ans = -1;
+        if(los) {
+            int sn = (int)(snr+0.5);
+            if(sn <MIN_SNR) return 0;
+            if(sn>MAX_SNR) return 1;
+            ans = _los[sn] * (1- _nlos[sn]);
+        }
+        else {
+            int sn = (int)(snr+0.5);
+            if(sn <MIN_SNR) return 1;
+            if(sn>MAX_SNR) return 0;
+            ans = (1-_los[sn]) * (_nlos[sn]);
+        }
+        return ans;
+    }
+    public static double evaluateWeightV0(Boolean[] los, double[] snr) {
+        double ans = 1;
+        for(int i=0;i<los.length;i++) {
+            double ei = eval(los[i], snr[i]);
+            ei = CORRECT_VAL*Math.max(ERR_VAL, ei);
+            ans *= ei;
+        }
+        return ans;
+    }
+
+    public void sort()
+    {
+        java.util.Collections.sort(this.ParticleList);
+        
+    }
+
+    public void PrintWeights1()
+    {
+        for(int i=0; i<NumberOfParticles; i++)
+        {
+            System.out.println(this.ParticleList.get(i).getWeight());
+        }
+    }
+
+    public static double evaluateWeightV1(Boolean[] los, double[] snr) {
+        double ans = 0;
+
+        for(int i=0;i<los.length;i++) {
+            if(snr[i]>=LOS_SNR || snr[i]<=NLOS_SNR)
+            {
+                if(snr[i]>=LOS_SNR && los[i]==true)
+                    ans++;
+                else if(snr[i]<NLOS_SNR  && los[i]==false)
+                    ans++;
+            }
+        }
+        return ans;
+    }
 
     public List<Particle> getParticleList() {
         return ParticleList;
@@ -146,6 +214,57 @@ public class Particles {
 
     }
 
+
+    public void ComputeWeight4KaminV1(List<Sat> allSats) // only >40 dbhz and <20 dbhz
+    {
+
+        double[] SNRvalue= new double[allSats.size()];
+        for(int i=0; i<allSats.size(); i++)
+            SNRvalue[i] = allSats.get(i).getSingleSNR();
+        for(int i=0;i<NumberOfParticles; i++)
+        {
+
+            if(ParticleList.get(i).OutOfRegion==true)
+                ParticleList.get(i).setWeight(0);
+            else if(ParticleList.get(i).OutOfRegion==false)
+            {
+                Boolean[] Los = ParticleList.get(i).getLOS();
+                double weight = evaluateWeightV0(Los, SNRvalue);
+
+                ParticleList.get(i).setWeight(weight);
+            }
+        }
+
+
+    }
+
+
+    public void ComputeWeight4KaminV0(List<Sat> allSats)
+    {
+
+        double[] SNRvalue= new double[allSats.size()];
+        for(int i=0; i<allSats.size(); i++)
+            SNRvalue[i] = allSats.get(i).getSingleSNR();
+        for(int i=0;i<NumberOfParticles; i++)
+        {
+
+            if(ParticleList.get(i).OutOfRegion==true)
+                ParticleList.get(i).setWeight(0);
+            else if(ParticleList.get(i).OutOfRegion==false)
+            {
+                Boolean[] Los = ParticleList.get(i).getLOS();
+                double weight = evaluateWeightV0(Los, SNRvalue);
+                double oldWeight =  ParticleList.get(i).getWeight();
+
+
+                        ParticleList.get(i).setWeight(weight*oldWeight);
+                      //  ParticleList.get(i).setOldWeight(weight*oldWeight);
+            }
+        }
+
+
+    }
+
     public void ComputeWeightsNoHistory(Boolean[] RecordedLos)
     {
 
@@ -219,6 +338,58 @@ public class Particles {
     }
 
 
+
+
+    public Point3D GetBestParticle()
+    {
+        Particle tmp  = getParticleWithMaxWeight();
+        double x = tmp.pos.getX();
+        double y = tmp.pos.getY();
+
+        double NewX = 0;
+        double NewY=0;
+        double NumOfRelevantParticles=0;
+        double MinWeight = tmp.getWeight()*PercentOfMaxWeight;
+        for(int i=0; i<NumberOfParticles; i++)
+        {
+            if(InRegion(ParticleList.get(i), x, y, MinWeight))
+            {
+                NewX+=ParticleList.get(i).pos.getX();
+                NewY+=ParticleList.get(i).pos.getY();
+                NumOfRelevantParticles++;
+
+            }
+
+
+        }
+        NewX = NewX/NumOfRelevantParticles;
+        NewY  = NewY/NumOfRelevantParticles;
+        return new Point3D(NewX, NewY, 1);
+    }
+
+
+
+
+
+    private boolean InRegion(Particle particle, double x, double y, double weight) {
+
+        if(Math.abs(particle.pos.getX()-x)<X_radius && Math.abs(particle.pos.getY()-y)<Y_radius && particle.getWeight() > weight)
+            return true;
+        return false;
+
+
+    }
+
+    private Particle getParticleWithMaxWeight() {
+        Particle tmp = ParticleList.get(0);
+        for(int i=1; i<NumberOfParticles; i++)
+        {
+            if(ParticleList.get(i).getWeight()>tmp.getWeight())
+                tmp = new Particle(ParticleList.get(i));
+        }
+
+        return tmp;
+    }
 
     public Point3D GetParticleWithMaxWeight()
     {
@@ -306,7 +477,7 @@ public class Particles {
       //  System.out.println("number for OOR is "+ numberOutOfrefion);
     }
 
-    public double[] Normal_Weights()
+    private double[] Normal_Weights()
     {
        double MaxWeight=0;
        List<Double> doubleWeight = new ArrayList<Double>();
@@ -425,7 +596,8 @@ public class Particles {
         for(int i=0; i<NumberOfParticles; i++)
         {
             ParticleList.get(i).SetLocation(NewList.get(i));
-           // ParticleList.get(i).OldWeight= NewList.get(i).OldWeight;
+            ParticleList.get(i).setWeight(1);
+            ParticleList.get(i).setNumberOfMatchedSats(12);
         }
 
     }
@@ -587,11 +759,7 @@ public class Particles {
 
     public void initParticles(Point3D p1, Point3D p2)
     {
-        //we need to make this function much more generic
-        /*int xMeter =(int)Math.abs(p2.x()-p1.x());
-        int yMeter = (int)Math.abs(p2.y()-p1.y());
-        int ParticlesX = NumberOfParticles/xMeter;
-        int ParticlesY = NumberOfParticles/yMeter;*/
+
         double sqrtPar = Math.sqrt(NumberOfParticles);
 
         double tmp = 100/sqrtPar;
@@ -601,7 +769,7 @@ public class Particles {
             {
 
                 Particle tmpParticle = new Particle(p1.getX()+tmp*i,p1.getY()+tmp*j, height);
-                tmpParticle.OldWeight = -1;
+                tmpParticle.setWeight(1);
               //  Particle tmpParticle = new Particle(670103.5, 3551179.5, 1);
                 ParticleList.add(tmpParticle);
 
@@ -612,11 +780,7 @@ public class Particles {
 
     public void initParticlesWithHeading(Point3D p1, Point3D p2)
     {
-        //we need to make this function much more generic
-        /*int xMeter =(int)Math.abs(p2.x()-p1.x());
-        int yMeter = (int)Math.abs(p2.y()-p1.y());
-        int ParticlesX = NumberOfParticles/xMeter;
-        int ParticlesY = NumberOfParticles/yMeter;*/
+
         double sqrtPar = Math.sqrt(NumberOfParticles);
         Random R1 = new Random(88);
         double heading;
@@ -628,8 +792,8 @@ public class Particles {
             {
 
                 Particle tmpParticle = new Particle(p1.getX()+tmp*i,p1.getY()+tmp*j, height);
-                heading = R1.nextDouble()*2*Math.PI;
-                //  tmpParticle.pos.heading = heading;
+                heading = Math.toDegrees(R1.nextDouble()*2*Math.PI);
+               tmpParticle.setVelocity_heading(heading);
                 //todo Roi Fix it
                 tmpParticle.OldWeight = -1;
                 //  Particle tmpParticle = new Particle(670103.5, 3551179.5, 1);
@@ -693,6 +857,79 @@ public class Particles {
     public Point3D randomPoint(double x){ return randomPoint(x,0);
     }
 
+
+
+    public void MoveParticlesBySOG_COG(double SOG, double COG)
+
+    {
+        MoveParticlesBySOG_COG( SOG,  COG,1);
+    }
+
+
+    public void MoveParticlesBySOG_COG(double SOG, double COG, double dt)
+    {
+
+        //System.out.println();
+        SOG = UtilsAlgorithms.convertKnots2m_s(SOG);
+        for(int i=0; i<NumberOfParticles; i++)
+        {
+            Point2D pivot =  randomPivotPoint(SOG, COG, dt);
+          //  System.out.print(pivot.getX()+"-"+pivot.getY()+"  ");
+            ParticleList.get(i).pos.offsetByPoint(pivot);
+
+        }
+
+    }
+
+    public void MoveParticlesBySOG_COGWithHeading(double SOG, double COG)
+    {
+
+        //System.out.println();
+        double c=0.5;
+        double currnetCOG;
+        SOG = UtilsAlgorithms.convertKnots2m_s(SOG);
+        for(int i=0; i<NumberOfParticles; i++)
+        {
+             currnetCOG = c*COG + (1-c)*ParticleList.get(i).getVelocity_heading();
+            ParticleList.get(i).setVelocity_heading(currnetCOG);
+            Point2D pivot =  randomPivotPoint(SOG, COG);
+            //  System.out.print(pivot.getX()+"-"+pivot.getY()+"  ");
+            ParticleList.get(i).pos.offsetByPoint(pivot);
+
+        }
+
+    }
+
+    public static Point2D randomPivotPoint(double SoG, double CoG) //COG - degrees. SOG m/s
+    {
+        return randomPivotPoint(SoG, CoG, 1.0);}
+    public static Point2D randomPivotPoint( double SoG_m2s, double CoG_deg, double dt) {
+        double x=0, y=0;
+        double dist = SoG_m2s*dt;
+        if(SoG_m2s <=0 ) return new Point2D(0,0);
+        if(SoG_m2s < MIN_SoG) {
+            double ds = Math.max(dist, 	MIN_MOVE);
+            double rx = Math.random()-0.5;
+            double ry = Math.random()-0.5;
+            x = rx*ds;
+            y = ry*ds;
+        }
+        else{
+            double d1 = Math.random()-0.5;
+            dist += d1*SOG_ERR_FACTOR;
+
+            double d2 = Math.random();
+            d2 = Math.pow(d2, CoG_POLYNOM);
+            if(Math.random()<0.5) d2 = -d2;
+            double err_cog = 1/Math.pow(SoG_m2s,SoG_ERR_POW);
+            double d_cog = err_cog*d2*CoG_ERR;
+            double ang_rad = Math.toRadians(CoG_deg+d_cog);
+            x = dist*Math.sin(ang_rad);
+            y = dist*Math.cos(ang_rad);
+        }
+        Point2D ans = new Point2D(x,y);
+        return ans;
+    }
     public void MoveParticleWithError(ActionFunction action)
     {
 
@@ -816,5 +1053,10 @@ public class Particles {
 
     public void getNaiveLosNlosState(NMEAPeriodicMeasurement meas) {
 
+    }
+
+    public void printWeights() {
+        for(int i=0; i<ParticleList.size(); i++)
+            System.out.print(ParticleList.get(i).getWeight()+ " ");
     }
 }

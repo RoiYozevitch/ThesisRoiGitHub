@@ -13,7 +13,7 @@ import java.util.List;
  * Time: 11:31
  * To change this template use File | Settings | File Templates.
  */
-public class Particle {
+public class Particle implements Comparable<Particle> {
 
     public Point3D pos;
     public double Weight;
@@ -25,6 +25,9 @@ public class Particle {
     public double OldWeight;
     public double OldMatchingSats;
     public static final  double OldNewRatio=0.8;
+    private double oldWeight;
+
+
 
     public Particle(Particle tmp) {
         this.pos = tmp.pos;
@@ -312,11 +315,11 @@ public class Particle {
 
         for (Building tmp : bs)
         {
-               contain=tmp.isContain(this.pos);
+               contain=tmp.isPoint2D_inBuilding(this.pos);
                if(contain==true)
                {
                    this.OutOfRegion=true;
-                   System.out.println("building is contain ");
+               //    System.out.println("building is contain ");
                    return true;
                }
         }
@@ -326,5 +329,20 @@ public class Particle {
     }
 
 
+    public double getOldWeight() {
+        return oldWeight;
+    }
 
+    public void setOldWeight(double oldWeight) {
+        this.oldWeight = oldWeight;
+    }
+
+    @Override
+    public int compareTo(Particle o) {
+        if(this.getWeight()>o.getWeight())
+            return -1;
+        if(this.getWeight()<o.getWeight())
+            return 1;
+        return 0;
+    }
 }

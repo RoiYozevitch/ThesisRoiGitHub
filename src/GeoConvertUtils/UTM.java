@@ -23,8 +23,6 @@
 
 package GeoConvertUtils;
 
-import javax.swing.*;
-import java.awt.*;
 
 
 /**
@@ -55,28 +53,7 @@ public class UTM extends Coordinates {
 
   /**
    * graphic text field to receive zone information
-   */
-  private JTextField tzone = null;
-  /**
-   * graphic text field to receive east coordinate value
-   */
-  private JTextField tx = null;
-  /**
-   * graphic text field to receive north coordinate value
-   */
-  private JTextField ty = null;
-  /**
-   * graphic text field to receive altitude value
-   */
-  private JTextField tz = null;
-  /**
-   * graphic widget to select north or south coordinate
-   */
-  private JComboBox tns = null;
 
-  /**
-   * whether the text fields may have been edited by the user
-   */
   private boolean edited = false;
 
   /**
@@ -127,36 +104,7 @@ public class UTM extends Coordinates {
   /**
    * read data from graphic widget if needed
    */
-  protected void update() {
-    if(edited) {
-      edited = false;
-      try {
-	zone = Integer.parseInt(tzone.getText().trim());
-      }
-      catch(NumberFormatException e1) {
-	zone = 30;
-      }
-      north = tns.getSelectedItem().toString().equals("N");
-      try {
-	x = Coordinates.parseLength(tx.getText());
-      }
-      catch(NumberFormatException e1) {
-	x = 0;
-      }
-      try {
-	y = Coordinates.parseLength(ty.getText());
-      }
-      catch(NumberFormatException e2) {
-	y = 0;
-      }
-      try {
-	z = Coordinates.parseAltitude(tz.getText());
-      }
-      catch(NumberFormatException e2) {
-	z = 0;
-      }
-    }
-  }
+
 
   /**
    * returns this coordinate as a string
@@ -164,7 +112,6 @@ public class UTM extends Coordinates {
    * @return string formated as "UTM <1-60> <N|S> east north altitude"
    */
   public String toString() {
-    update();
     String res = getName() + " " + String.valueOf(zone) + " ";
     if(north)
       res += "N ";
@@ -208,7 +155,6 @@ public class UTM extends Coordinates {
    * @return WGS84 coordinates object
    */
   public WGS84 toWGS84() {
-    update();
 
     /*
      * UTM projection => reference ellipsoid geographic
@@ -264,79 +210,7 @@ public class UTM extends Coordinates {
    * 
    * @param panel parent window to create wigets in
    */
-  public void editor(JPanel panel) {
-    GridBagLayout layout = new GridBagLayout();
-    GridBagConstraints c = new GridBagConstraints();
-    c.anchor = GridBagConstraints.WEST;
-    c.fill = GridBagConstraints.BOTH;
-    panel.setLayout(layout);
-    c.gridy = 0;
 
-    JLabel lzone = new JLabel("zone ");
-    c.gridx = 0;
-    c.weightx = 0.0;
-    layout.setConstraints(lzone, c);
-    panel.add(lzone);
-    tzone = new JTextField(2);
-    tzone.setText(String.valueOf(zone));
-    c.gridx = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(tzone, c);
-    panel.add(tzone);
-    
-    JLabel lhemi = new JLabel("hemisphere ");
-    c.gridx = 0;
-    c.gridy = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(lhemi, c);
-    panel.add(lhemi);
-    tns = new JComboBox();
-    tns.addItem("N");
-    tns.addItem("S");
-    tns.setSelectedItem(north ? "N" : "S");
-    c.gridx = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(tns, c);
-    panel.add(tns);
-    
-    JLabel lx = new JLabel(" X=");
-    c.gridy = 0;
-    c.gridx = 2;
-    c.weightx = 0.0;
-    layout.setConstraints(lx, c);
-    panel.add(lx);
-    tx = new JTextField(Coordinates.lengthToString(x));
-    c.gridx = 3;
-    c.weightx = 1.0;
-    layout.setConstraints(tx, c);
-    panel.add(tx);
-    
-    JLabel ly = new JLabel(" Y=");
-    c.gridx = 2;
-    c.gridy = 1;
-    c.weightx = 0.0;
-    layout.setConstraints(ly, c);
-    panel.add(ly);
-    ty = new JTextField(Coordinates.lengthToString(y));
-    c.gridx = 3;
-    c.weightx = 1.0;
-    layout.setConstraints(ty, c);
-    panel.add(ty);
-    
-    JLabel lz = new JLabel(" Z=");
-    c.gridx = 2;
-    c.gridy = 2;
-    c.weightx = 0.0;
-    layout.setConstraints(lz, c);
-    panel.add(lz);
-    tz = new JTextField(Coordinates.altitudeToString(z));
-    c.gridx = 3;
-    c.weightx = 1.0;
-    layout.setConstraints(tz, c);
-    panel.add(tz);
-    
-    setEditable(false);
-  }
 
 
   /**
@@ -345,15 +219,8 @@ public class UTM extends Coordinates {
    * @param edit wheter to toggle on or off
    */
   public void setEditable(boolean edit) {
-   if(tx != null) {
-      if(edit)
-	edited = true;
-      tzone.setEditable(edit);
-      tx.setEditable(edit);
-      ty.setEditable(edit);
-      tz.setEditable(edit);
-      tns.setEnabled(edit);
-    }
+
+
   }
   public double getEast() {return this.x;}
   public double getNorth() {return this.y;}

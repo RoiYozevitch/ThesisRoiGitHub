@@ -2,8 +2,10 @@ package ParticleFilter;
 
 
 import GNSS.Sat;
+import GUI.KML_Generator;
 import Geometry.Point3D;
 import MachineLearning.Test;
+import Utils.GeoUtils;
 import dataStructres.NMEAPeriodicMeasurement;
 import dataStructres.NMEASVMeasurement;
 
@@ -22,6 +24,7 @@ import java.util.Random;
 public class UtilsAlgorithms {
 
     public static int SEED_RND = 54;
+    public static final double Knots2m_s = 0.514444;
     public static final int SNRthreshold = 38;
     public static final double Weight_pow =10.2  ;
     public static final double AbsValue= 2.5;
@@ -38,6 +41,17 @@ public class UtilsAlgorithms {
     public static void setVelocityGauusianError(double velocityGauusianError) {
         VelocityGauusianError = velocityGauusianError;
     }
+
+
+
+    static double convertKnots2m_s(double speed)
+    {
+        return speed*Knots2m_s;
+    }
+
+
+
+
 
     public static List<Sat> GetUpdateSatList(NMEAPeriodicMeasurement meas)
     {
@@ -280,5 +294,52 @@ sat_data2.add(tmp);
         double SOG = nmeaPeriodicMeasurement.getCOG();
         ActionFunction action = new ActionFunction(0,0,0);
         return action;
+    }
+
+    public static void PrintSatList(List<Sat> allSat) {
+        for(int i=0; i< allSat.size(); i++)
+            System.out.println("PRN: "+allSat.get(i).getSatID()+". SNR: "+allSat.get(i).getSingleSNR()+". Az: "+allSat.get(i).getAzimuth()+". El: "+allSat.get(i).getElevetion());
+        System.out.println();
+        System.out.println();
+    }
+
+
+    public static void GenerateKMLfromCOG_SOS(List<NMEAPeriodicMeasurement> nmeaList, String recons_path) {
+        List<Point3D> points = new ArrayList<>();
+
+        Point3D tmp = new Point3D(670109, 3551135, 1.5);
+        points.add(tmp);
+        for(int i=2; i<nmeaList.size(); i++)
+        {
+            double COG = nmeaList.get(i).getCOG();
+            double SOG = nmeaList.get(i).getSOG();
+            SOG = UtilsAlgorithms.convertKnots2m_s(SOG);
+            double dt = nmeaList.get(i).getUtcTime()  - nmeaList.get(i-1).getUtcTime();
+            if(dt>1)
+                dt=1;
+            System.out.println("dT is: "+dt+" .SOG is :"+ SOG);
+            double dx = SOG*dt*Math.sin(Math.toRadians(COG));
+            double dy = SOG*dt*Math.cos(Math.toRadians(COG));
+            tmp.offset(dx, dy,0);
+            tmp = new Point3D(tmp);
+            points.add(tmp);
+
+        }
+        KML_Generator.Generate_kml_from_List(points, recons_path, false);
+
+
+
+    }
+
+    public static void GenerateKMLfromNMEA_List(List<NMEAPeriodicMeasurement> nmeaList, String recons_path2) {
+        List<Point3D> ans = new ArrayList<>();
+        for (int i=1; i< nmeaList.size(); i++)
+        {
+            double lat = nmeaList.get(i).getLat();
+            double lon = nmeaList.get(i).getLon();
+            Point3D tmp = new Point3D(lat, lon, 1);
+            ans.add(tmp);
+        }
+        KML_Generator.Generate_kml_from_List(ans, recons_path2, true);
     }
 }

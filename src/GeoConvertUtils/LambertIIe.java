@@ -108,7 +108,6 @@ public class LambertIIe extends Lambert {
    * @return WGS84 coordinates object
    */
   public WGS84 toWGS84() {
-    update();
     /*
      * Lambert projection => Lambert geographic
      */

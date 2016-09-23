@@ -29,6 +29,7 @@ public class STMProtocolParser {
         List<STMPeriodMeasurment> result = new ArrayList<STMPeriodMeasurment>();
         BufferedReader br = new BufferedReader(new FileReader(path)); //todo throw spesific exeption. Check where an NMEA msg starts
         String line;
+        double Course, Speed;
         double lat = 0, lon = 0, alt = 0, altElip = 0, hDOP = 0;
         long time = 0;
         long UtcTime=0;
@@ -55,6 +56,9 @@ public class STMProtocolParser {
             {
                 DateFormat df = new SimpleDateFormat("HHmmss.SSS");
                 UtcTime  = df.parse(data[currentSentence.getfieldsIndexByName("UtcTime")]).getTime();
+                Course = Double.parseDouble(data[currentSentence.getfieldsIndexByName("course")]);
+                Speed =  Double.parseDouble(data[currentSentence.getfieldsIndexByName("speedKm_H")]);
+
             }
             if (currentSentence.getSentenceName().equals("$GPGGA")){
                 time = Long.parseLong(data[currentSentence.getfieldsIndexByName("time")].replace(".", ""));
