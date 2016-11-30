@@ -30,18 +30,40 @@ public class parsingMain {
 
      // MovingRecording();
       //  SirfParseForGpsSwitch();
-       SirfParsingML();
+      // SirfParsingML();
       //  TestLosNlosAlgorithm();
         //PseudoRangeCompute();
     /*    try {
             TestLosNlosAlgorithm();
         } catch (Exception e) {
             e.printStackTrace();
+
         }
+
+
 */
 
+    String SirfFIle = "pointA_11_AM.gps";
+        String OutputFile = "ParsedPointA_11_AM";
+          ParseSirfFileToCsv(SirfFIle, OutputFile);
     }
 
+    private static void ParseSirfFileToCsv(String SirfFilePath, String OutputFile)
+    {
+        SirfProtocolParser parser = new SirfProtocolParser();
+        try {
+            List<SirfPeriodicMeasurement> sirfMeas = parser.parseFile(SirfFilePath);
+            System.out.println(sirfMeas.size());
+            //SirfMLCsvWriter.printToFile4GpsSwitchProject(sirfMeas, OutputFile);
+            SirfCsvWriter.printToFile(sirfMeas, OutputFile);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
 
     private static void SirfParseForGpsSwitch()
     {
